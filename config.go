@@ -11,7 +11,6 @@ import (
 
 // File that user information such as client id and
 // api keys will be written to.
-// Defaults to $HOME/.fisherman
 var (
 	defaultConfigFile = fmt.Sprintf("%s/.fish", os.ExpandEnv("$HOME"))
 	configFile        = ""
@@ -27,7 +26,6 @@ type Config struct {
 type conf struct {
 	ClientID   string `toml:"client_id"`
 	APIKey     string `toml:"api_key"`
-	SSHKeyPath string `toml:"ssh_key_path"`
 }
 
 // Loads the configuration from the filepath. If there's any

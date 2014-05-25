@@ -30,6 +30,7 @@ func GetImages(filter string) ([]Image, error) {
 	resp := struct {
 		Status string  `json"status"`
 		Images []Image `json:"images"`
+		Err string `json:"error_message"`
 	}{}
 
 	err = json.Unmarshal(body, &resp)
@@ -38,7 +39,7 @@ func GetImages(filter string) ([]Image, error) {
 	}
 
 	if resp.Status == "ERROR" {
-		return nil, errors.New("Error retrieving images")
+		return nil, errors.New(resp.Err)
 	}
 
 	return resp.Images, nil
