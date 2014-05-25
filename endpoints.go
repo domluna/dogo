@@ -1,4 +1,4 @@
-package v1
+package dogo
 
 const (
 	// Version of the DigitalOcean API
