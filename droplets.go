@@ -2,7 +2,6 @@ package dogo
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 )
@@ -47,7 +46,7 @@ func GetDroplets() ([]Droplet, error) {
 	}
 
 	if resp.Status == "ERROR" {
-		return nil, errors.New(resp.ErrMessage)
+		return nil, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return resp.Droplets, nil
@@ -81,7 +80,7 @@ func GetDroplet(id int) (Droplet, error) {
 	}
 
 	if resp.Status == "ERROR" {
-		return Droplet{}, errors.New(resp.ErrMessage)
+		return Droplet{}, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return resp.Droplet, nil
@@ -116,7 +115,7 @@ func CreateDroplet(name string, sizeID, imageID, regionID int, keys string) (Dro
 	}
 
 	if resp.Status == "ERROR" {
-		return Droplet{}, errors.New(resp.ErrMessage)
+		return Droplet{}, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return resp.Droplet, nil
@@ -147,7 +146,7 @@ func DestroyDroplet(id int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -179,7 +178,7 @@ func ResizeDroplet(id int, slug string) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -210,7 +209,7 @@ func RebootDroplet(id int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -243,7 +242,7 @@ func RebuildDroplet(id, imageID int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New("Error rebuilding droplet with new image")
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -274,7 +273,7 @@ func StopDroplet(id int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New("Error powering off droplet")
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -304,7 +303,7 @@ func StartDroplet(id int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -336,7 +335,7 @@ func SnapshotDroplet(id int, name string) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
@@ -369,7 +368,7 @@ func RestoreDroplet(id, imageID int) error {
 	}
 
 	if resp.Status == "ERROR" {
-		return errors.New(resp.ErrMessage)
+		return fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return nil
