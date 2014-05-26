@@ -23,13 +23,13 @@ type Droplet struct {
 }
 
 // GetDroplets returns all users droplets, active or otherwise.
-func GetDroplets() ([]Droplet, error) {
+func (c *Client) GetDroplets() ([]Droplet, error) {
 	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
 		DropletsEndpoint,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +54,14 @@ func GetDroplets() ([]Droplet, error) {
 }
 
 // GetDroplet return an individual droplet based on the passed id.
-func GetDroplet(id int) (Droplet, error) {
+func (c *Client) GetDroplet(id int) (Droplet, error) {
 	query := fmt.Sprintf("%s/%d/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return Droplet{}, err
 	}
@@ -87,18 +87,18 @@ func GetDroplet(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func CreateDroplet(name string, sizeID, imageID, regionID int, keys string) (Droplet, error) {
+func (c *Client) CreateDroplet(name string, sizeID, imageID, regionID int, keys string) (Droplet, error) {
 	query := fmt.Sprintf("%s/new?client_id=%s&api_key=%s&name=%s&size_id=%d&image_id=%d&region_id=%d&ssh_key_ids=%s",
 		DropletsEndpoint,
-		config.Conf.ClientID,
-		config.Conf.APIKey,
+		c.Auth.ClientID,
+		c.Auth.APIKey,
 		name,
 		sizeID,
 		imageID,
 		regionID,
 		keys)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return Droplet{}, err
 	}
@@ -123,14 +123,14 @@ func CreateDroplet(name string, sizeID, imageID, regionID int, keys string) (Dro
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
-func DestroyDroplet(id int) error {
+func (c *Client) DestroyDroplet(id int) error {
 	query := fmt.Sprintf("%s/%d/destroy/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -154,15 +154,15 @@ func DestroyDroplet(id int) error {
 
 // ResizeDroplet droplet resizes a droplet. Sizes are based on
 // the digitalocean sizes api.
-func ResizeDroplet(id int, slug string) error {
+func (c *Client) ResizeDroplet(id int, slug string) error {
 	query := fmt.Sprintf("%s/%d/resize/?size_slug=%s&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		slug,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -186,14 +186,14 @@ func ResizeDroplet(id int, slug string) error {
 
 // RebootDroplet reboots the a droplet. This is the preferred method
 // to use if a server is not responding.
-func RebootDroplet(id int) error {
+func (c *Client) RebootDroplet(id int) error {
 	query := fmt.Sprintf("%s/%d/reboot/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -218,15 +218,15 @@ func RebootDroplet(id int) error {
 // RebootDroplet rebuilds a droplet with a default image. This can be
 // useful if you want to use a different image but keep the ip address
 // of the droplet.
-func RebuildDroplet(id, imageID int) error {
+func (c *Client) RebuildDroplet(id, imageID int) error {
 	query := fmt.Sprintf("%s/%d/rebuild/?image_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		imageID,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -250,14 +250,14 @@ func RebuildDroplet(id, imageID int) error {
 
 // StopDroplet powers off a running droplet, the droplet will remain
 // in your account.
-func StopDroplet(id int) error {
+func (c *Client) StopDroplet(id int) error {
 	query := fmt.Sprintf("%s/%d/power_off/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -280,14 +280,14 @@ func StopDroplet(id int) error {
 }
 
 // StartDroplet powers on a powered off droplet.
-func StartDroplet(id int) error {
+func (c *Client) StartDroplet(id int) error {
 	query := fmt.Sprintf("%s/%d/power_on/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -311,15 +311,15 @@ func StartDroplet(id int) error {
 
 // SnapshotDroplet allows you to take a snapshot of a droplet once it is
 // powered off. Be aware this may reboot the droplet.
-func SnapshotDroplet(id int, name string) error {
+func (c *Client) SnapshotDroplet(id int, name string) error {
 	query := fmt.Sprintf("%s/%d/snapshot/?name=%s&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		name,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
@@ -344,15 +344,15 @@ func SnapshotDroplet(id int, name string) error {
 // RestoreDroplet allows you to restore a droplet to a previous image
 // or snapshot. This will be a mirror copy of the image or snapshot to
 // your droplet.
-func RestoreDroplet(id, imageID int) error {
+func (c *Client) RestoreDroplet(id, imageID int) error {
 	query := fmt.Sprintf("%s/%d/restore/?image_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		imageID,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}

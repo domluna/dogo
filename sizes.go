@@ -13,13 +13,13 @@ type Size struct {
 	Slug string `json:"slug"`
 }
 
-func GetSizes() ([]Size, error) {
+func (c *Client) GetSizes() ([]Size, error) {
 	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
 		SizesEndpoint,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return nil, err
 	}

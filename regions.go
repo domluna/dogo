@@ -11,14 +11,14 @@ type Region struct {
 	Slug string `json:"slug"`
 }
 
-func GetRegions() ([]Region, error) {
+func (c *Client) GetRegions() ([]Region, error) {
 	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
 		RegionsEndpoint,
-		config.Conf.ClientID,
-		config.Conf.APIKey,
+		c.Auth.ClientID,
+		c.Auth.APIKey,
 	)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return nil, err
 	}

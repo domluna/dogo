@@ -15,13 +15,13 @@ type SSHKey struct {
 }
 
 // GetSSHKeys retrieves all the users current ssh keys.
-func GetSSHKeys() ([]SSHKey, error) {
+func (c *Client) GetSSHKeys() ([]SSHKey, error) {
 	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
 		KeysEndpoint,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return nil, err
 	}
@@ -44,15 +44,15 @@ func GetSSHKeys() ([]SSHKey, error) {
 }
 
 // AddSSHKey adds an ssh key to the user account.
-func AddSSHKey(name, publicKey string) (SSHKey, error) {
+func (c *Client) AddSSHKey(name, publicKey string) (SSHKey, error) {
 	query := fmt.Sprintf("%s/new/?name=%s&ssh_pub_key=%s&client_id=%s&api_key=%s",
 		KeysEndpoint,
 		name,
 		url.QueryEscape(publicKey),
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return SSHKey{}, err
 	}
@@ -75,14 +75,14 @@ func AddSSHKey(name, publicKey string) (SSHKey, error) {
 }
 
 // GetSSHKey returns the public key, this includes the public key.
-func GetSSHKey(id int) (SSHKey, error) {
+func (c *Client) GetSSHKey(id int) (SSHKey, error) {
 	query := fmt.Sprintf("%s/%d/?client_id=%s&api_key=%s",
 		KeysEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return SSHKey{}, err
 	}
@@ -106,14 +106,14 @@ func GetSSHKey(id int) (SSHKey, error) {
 
 // DestroySSHKey destroys the ssh key with
 // passed id from user account.
-func DestroySSHKey(id int) error {
+func (c *Client) DestroySSHKey(id int) error {
 	query := fmt.Sprintf("%s/%d/destroy/?client_id=%s&api_key=%s",
 		KeysEndpoint,
 		id,
-		config.Conf.ClientID,
-		config.Conf.APIKey)
+		c.Auth.ClientID,
+		c.Auth.APIKey)
 
-	body, err := sendQuery(query)
+	body, err := Request(query)
 	if err != nil {
 		return err
 	}
