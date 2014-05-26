@@ -2,9 +2,7 @@ package dogo
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"log"
 )
 
 type Region struct {
@@ -22,12 +20,13 @@ func GetRegions() ([]Region, error) {
 
 	body, err := sendQuery(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	resp := struct {
-		Status  string   `json"status"`
-		Regions []Region `json:"regions"`
+		Status     string   `json"status"`
+		Regions    []Region `json:"regions"`
+		ErrMessage string   `json:"error_message"`
 	}{}
 
 	err = json.Unmarshal(body, &resp)
@@ -36,7 +35,7 @@ func GetRegions() ([]Region, error) {
 	}
 
 	if resp.Status == "ERROR" {
-		return nil, errors.New("Error retrieving regions")
+		return nil, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return resp.Regions, nil

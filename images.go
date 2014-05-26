@@ -2,7 +2,6 @@ package dogo
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -28,9 +27,9 @@ func GetImages(filter string) ([]Image, error) {
 	}
 
 	resp := struct {
-		Status string  `json"status"`
-		Images []Image `json:"images"`
-		Err string `json:"error_message"`
+		Status     string  `json"status"`
+		Images     []Image `json:"images"`
+		ErrMessage string  `json:"error_message"`
 	}{}
 
 	err = json.Unmarshal(body, &resp)
@@ -39,7 +38,7 @@ func GetImages(filter string) ([]Image, error) {
 	}
 
 	if resp.Status == "ERROR" {
-		return nil, errors.New(resp.Err)
+		return nil, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
 	}
 
 	return resp.Images, nil

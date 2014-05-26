@@ -24,8 +24,8 @@ type Config struct {
 
 // Parsed configuration settings.
 type conf struct {
-	ClientID   string `toml:"client_id"`
-	APIKey     string `toml:"api_key"`
+	ClientID string `toml:"client_id"`
+	APIKey   string `toml:"api_key"`
 }
 
 // Loads the configuration from the filepath. If there's any
