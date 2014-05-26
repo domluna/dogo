@@ -3,7 +3,6 @@ package dogo
 import (
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 // Sends a GET request to the query url and returns
