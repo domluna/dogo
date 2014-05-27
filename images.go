@@ -14,6 +14,12 @@ type Image struct {
 	Public       bool   `json:"public"`
 }
 
+// GetImages returns DigitalOcean images, filter can either be
+// "my_images" or "global".
+//
+// If filter is set to "my_images" user snapshots will be returned.
+//
+// If filter is set to "global" all default images will be returned.
 func (c *Client) GetImages(filter string) ([]Image, error) {
 	query := fmt.Sprintf("%s?client_id=%s&api_key=%s&filter=%s",
 		ImagesEndpoint,

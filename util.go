@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-// Sends a GET request to the query url and returns
-// the response or an error.
+// Request sends a GET request to the endpoint and returns
+// the response body.
 func Request(endpoint string) ([]byte, error) {
 	resp, err := http.Get(endpoint)
 	if err != nil {
