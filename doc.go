@@ -31,9 +31,14 @@ available regions:
 
 To create a new Droplet:
 
-	// Creates a new droplet named "my_droplet" in the New York region
-	// with a size of 512MB and an image of Docker 0.11.1 on ubuntu 13.10 x64
-	droplet, err := client.CreateDroplet("my_droplet", 66, 3668014, 4, "")
+	// Creates a new droplet named "my_droplet"
+	// size id: 66 "512MB"
+	// image id: 3668014 "Docker Image"
+	// region id: 4 "nyc2"
+	// ssh key id: 1234 (id in user account)
+	// private networking: true
+	// backups enabled: true
+	droplet, err := client.CreateDroplet("my_droplet", 66, 3668014, 4, 1234, true, true)
 	...
 
 To add a ssh key to your account:

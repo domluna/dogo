@@ -88,7 +88,12 @@ func (c *Client) GetDroplet(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (c *Client) CreateDroplet(name string, sizeID, imageID, regionID int, keys []int) (Droplet, error) {
+func (c *Client) CreateDroplet(
+	name string,
+	sizeID, imageID, regionID int,
+	keys []int,
+	pnetwork, backups bool) (Droplet, error) {
+
 	// Create a string of the key ids
 	var keyStr string
 	for _, k := range keys {
@@ -96,7 +101,7 @@ func (c *Client) CreateDroplet(name string, sizeID, imageID, regionID int, keys 
 		keyStr += ks + ","
 	}
 
-	query := fmt.Sprintf("%s/new?client_id=%s&api_key=%s&name=%s&size_id=%d&image_id=%d&region_id=%d&ssh_key_ids=%s",
+	query := fmt.Sprintf("%s/new?client_id=%s&api_key=%s&name=%s&size_id=%d&image_id=%d&region_id=%d&ssh_key_ids=%sprivate_networking=%t&backups_enabled=%t",
 		DropletsEndpoint,
 		c.Auth.ClientID,
 		c.Auth.APIKey,
@@ -104,7 +109,9 @@ func (c *Client) CreateDroplet(name string, sizeID, imageID, regionID int, keys 
 		sizeID,
 		imageID,
 		regionID,
-		keyStr)
+		keyStr,
+		pnetwork,
+		backups)
 
 	body, err := Request(query)
 	if err != nil {
