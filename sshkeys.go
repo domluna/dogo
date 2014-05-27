@@ -11,7 +11,7 @@ import (
 type SSHKey struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
-	SSHPublicKey string `json:"ssh_pub_key"`
+	SSHPublicKey string `json:"ssh_pub_key,omitempty"`
 }
 
 // GetSSHKeys retrieves all the users current ssh keys.

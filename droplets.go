@@ -15,8 +15,8 @@ type Droplet struct {
 	RegionID         int       `json:"region_id"`
 	BackupsActive    bool      `json:"backups_active"`
 	IPAddress        string    `json:"ip_address"`
-	PrivateIPAddress string    `json:"private_ip_address"`
-	Snapshots        []Image   `json:"snapshots"`
+	PrivateIPAddress string    `json:"private_ip_address,omitempty"`
+	Snapshots        []Image   `json:"snapshots,omitempty"`
 	Locked           bool      `json:"locked"`
 	Status           string    `json:"status"`
 	CreatedAt        time.Time `json:"created_at"`
