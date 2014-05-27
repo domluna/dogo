@@ -44,11 +44,12 @@ func (c *Client) GetSSHKeys() ([]SSHKey, error) {
 }
 
 // AddSSHKey adds an ssh key to the user account.
-func (c *Client) AddSSHKey(name, publicKey string) (SSHKey, error) {
+func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
+	ks := url.QueryEscape(string(publicKey))
 	query := fmt.Sprintf("%s/new/?name=%s&ssh_pub_key=%s&client_id=%s&api_key=%s",
 		KeysEndpoint,
 		name,
-		url.QueryEscape(publicKey),
+		ks,
 		c.Auth.ClientID,
 		c.Auth.APIKey)
 

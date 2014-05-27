@@ -1,6 +1,6 @@
 package dogo
 
-// Auth contains data required to authenticate 
+// Auth contains data required to authenticate
 // get DigitalOcean api.
 type Auth struct {
 	ClientID string
@@ -9,7 +9,7 @@ type Auth struct {
 
 // Client is a wrapper around Auth, Clients are used
 // to query the api.
-// 
+//
 // To make a new Client call NewClient.
 type Client struct {
 	Auth
