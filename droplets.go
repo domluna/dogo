@@ -154,11 +154,11 @@ func (c *Client) DestroyDroplet(id int) error {
 
 // ResizeDroplet droplet resizes a droplet. Sizes are based on
 // the digitalocean sizes api.
-func (c *Client) ResizeDroplet(id int, slug string) error {
-	query := fmt.Sprintf("%s/%d/resize/?size_slug=%s&client_id=%s&api_key=%s",
+func (c *Client) ResizeDroplet(id, sizeID int) error {
+	query := fmt.Sprintf("%s/%d/resize/?size_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
-		slug,
+		sizeID,
 		c.Auth.ClientID,
 		c.Auth.APIKey)
 

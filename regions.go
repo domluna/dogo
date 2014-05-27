@@ -40,7 +40,7 @@ func (c *Client) GetRegions() ([]Region, error) {
 	}
 
 	resp := struct {
-		Status     string   `json"status"`
+		Status     string   `json:"status"`
 		Regions    []Region `json:"regions"`
 		ErrMessage string   `json:"error_message"`
 	}{}

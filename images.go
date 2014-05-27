@@ -33,7 +33,7 @@ func (c *Client) GetImages(filter string) ([]Image, error) {
 	}
 
 	resp := struct {
-		Status     string  `json"status"`
+		Status     string  `json:"status"`
 		Images     []Image `json:"images"`
 		ErrMessage string  `json:"error_message"`
 	}{}
