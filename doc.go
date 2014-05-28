@@ -32,13 +32,23 @@ available regions:
 To create a new Droplet:
 
 	// Creates a new droplet named "my_droplet"
-	// size id: 66 "512MB"
-	// image id: 3668014 "Docker Image"
-	// region id: 4 "nyc2"
-	// ssh key id: 1234 (id in user account)
-	// private networking: true
-	// backups enabled: true
-	droplet, err := client.CreateDroplet("my_droplet", 66, 3668014, 4, 1234, true, true)
+	// SizeID: 66 => "512MB"
+	// ImageID: 3668014 => "Docker Image"
+	// RegionID: 4 => "nyc2"
+	// BackupsActive enables backups
+	//
+	// 1234 is a ssh key id, this can be a list of ints
+	// for multiple ids.
+	//
+	// The last argument sets whether you want a private network id.
+	d := dogo.Droplet{
+		Name: "droppy",
+		SizeID: 66,
+		ImageID: 3668014,
+		RegionID: 4,
+		BackupsActive: true,
+	}
+	droplet, err := client.CreateDroplet(d, 1234, true)
 	...
 
 To add a ssh key to your account:
