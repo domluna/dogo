@@ -21,11 +21,13 @@ type Image struct {
 //
 // If filter is set to "global" all default images will be returned.
 func (c *Client) GetImages(filter string) ([]Image, error) {
-	query := fmt.Sprintf("%s?client_id=%s&api_key=%s&filter=%s",
+	query := fmt.Sprintf(
+		"%s?client_id=%s&api_key=%s&filter=%s",
 		ImagesEndpoint,
 		c.Auth.ClientID,
 		c.Auth.APIKey,
-		filter)
+		filter,
+	)
 
 	body, err := Request(query)
 	if err != nil {

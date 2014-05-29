@@ -28,7 +28,8 @@ var RegionsMap = map[string]int{
 
 // GetRegions gets all current available regions a droplet may be created in.
 func (c *Client) GetRegions() ([]Region, error) {
-	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s?client_id=%s&api_key=%s",
 		RegionsEndpoint,
 		c.Auth.ClientID,
 		c.Auth.APIKey,

@@ -16,10 +16,12 @@ type SSHKey struct {
 
 // GetSSHKeys retrieves all the users current ssh keys.
 func (c *Client) GetSSHKeys() ([]SSHKey, error) {
-	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s?client_id=%s&api_key=%s",
 		KeysEndpoint,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -46,12 +48,14 @@ func (c *Client) GetSSHKeys() ([]SSHKey, error) {
 // AddSSHKey adds an ssh key to the user account.
 func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 	ks := url.QueryEscape(string(publicKey))
-	query := fmt.Sprintf("%s/new/?name=%s&ssh_pub_key=%s&client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/new/?name=%s&ssh_pub_key=%s&client_id=%s&api_key=%s",
 		KeysEndpoint,
 		name,
 		ks,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -77,11 +81,13 @@ func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 
 // GetSSHKey returns the public key, this includes the public key.
 func (c *Client) GetSSHKey(id int) (SSHKey, error) {
-	query := fmt.Sprintf("%s/%d/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/?client_id=%s&api_key=%s",
 		KeysEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -108,11 +114,13 @@ func (c *Client) GetSSHKey(id int) (SSHKey, error) {
 // DestroySSHKey destroys the ssh key with
 // passed id from user account.
 func (c *Client) DestroySSHKey(id int) error {
-	query := fmt.Sprintf("%s/%d/destroy/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/destroy/?client_id=%s&api_key=%s",
 		KeysEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {

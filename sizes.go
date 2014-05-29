@@ -29,10 +29,12 @@ var SizesMap = map[string]int{
 
 // GetSizes returns all currently available droplet sizes.
 func (c *Client) GetSizes() ([]Size, error) {
-	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s?client_id=%s&api_key=%s",
 		SizesEndpoint,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {

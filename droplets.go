@@ -25,10 +25,12 @@ type Droplet struct {
 
 // GetDroplets returns all users droplets, active or otherwise.
 func (c *Client) GetDroplets() ([]Droplet, error) {
-	query := fmt.Sprintf("%s?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -56,11 +58,13 @@ func (c *Client) GetDroplets() ([]Droplet, error) {
 
 // GetDroplet return an individual droplet based on the passed id.
 func (c *Client) GetDroplet(id int) (Droplet, error) {
-	query := fmt.Sprintf("%s/%d/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -97,7 +101,8 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 		keyStr += ks + ","
 	}
 
-	query := fmt.Sprintf("%s/new?client_id=%s&api_key=%s&name=%s&size_id=%d&image_id=%d&region_id=%d&ssh_key_ids=%s&private_networking=%t&backups_enabled=%t",
+	query := fmt.Sprintf(
+		"%s/new?client_id=%s&api_key=%s&name=%s&size_id=%d&image_id=%d&region_id=%d&ssh_key_ids=%s&private_networking=%t&backups_enabled=%t",
 		DropletsEndpoint,
 		c.Auth.ClientID,
 		c.Auth.APIKey,
@@ -107,7 +112,8 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 		d.RegionID,
 		keyStr,
 		privateNet,
-		d.BackupsActive)
+		d.BackupsActive,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -135,11 +141,13 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
 func (c *Client) DestroyDroplet(id int) error {
-	query := fmt.Sprintf("%s/%d/destroy/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/destroy/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -166,12 +174,14 @@ func (c *Client) DestroyDroplet(id int) error {
 // ResizeDroplet droplet resizes a droplet. Sizes are based on
 // the digitalocean sizes api.
 func (c *Client) ResizeDroplet(id, sizeID int) error {
-	query := fmt.Sprintf("%s/%d/resize/?size_id=%d&client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/resize/?size_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		sizeID,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -198,11 +208,13 @@ func (c *Client) ResizeDroplet(id, sizeID int) error {
 // RebootDroplet reboots the a droplet. This is the preferred method
 // to use if a server is not responding.
 func (c *Client) RebootDroplet(id int) error {
-	query := fmt.Sprintf("%s/%d/reboot/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/reboot/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -230,12 +242,14 @@ func (c *Client) RebootDroplet(id int) error {
 // useful if you want to use a different image but keep the ip address
 // of the droplet.
 func (c *Client) RebuildDroplet(id, imageID int) error {
-	query := fmt.Sprintf("%s/%d/rebuild/?image_id=%d&client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/rebuild/?image_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		imageID,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -262,11 +276,13 @@ func (c *Client) RebuildDroplet(id, imageID int) error {
 // StopDroplet powers off a running droplet, the droplet will remain
 // in your account.
 func (c *Client) StopDroplet(id int) error {
-	query := fmt.Sprintf("%s/%d/power_off/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/power_off/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -292,11 +308,13 @@ func (c *Client) StopDroplet(id int) error {
 
 // StartDroplet powers on a powered off droplet.
 func (c *Client) StartDroplet(id int) error {
-	query := fmt.Sprintf("%s/%d/power_on/?client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/power_on/?client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -323,12 +341,14 @@ func (c *Client) StartDroplet(id int) error {
 // SnapshotDroplet allows you to take a snapshot of a droplet once it is
 // powered off. Be aware this may reboot the droplet.
 func (c *Client) SnapshotDroplet(id int, name string) error {
-	query := fmt.Sprintf("%s/%d/snapshot/?name=%s&client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/snapshot/?name=%s&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		name,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
@@ -356,12 +376,14 @@ func (c *Client) SnapshotDroplet(id int, name string) error {
 // or snapshot. This will be a mirror copy of the image or snapshot to
 // your droplet.
 func (c *Client) RestoreDroplet(id, imageID int) error {
-	query := fmt.Sprintf("%s/%d/restore/?image_id=%d&client_id=%s&api_key=%s",
+	query := fmt.Sprintf(
+		"%s/%d/restore/?image_id=%d&client_id=%s&api_key=%s",
 		DropletsEndpoint,
 		id,
 		imageID,
 		c.Auth.ClientID,
-		c.Auth.APIKey)
+		c.Auth.APIKey,
+	)
 
 	body, err := Request(query)
 	if err != nil {
