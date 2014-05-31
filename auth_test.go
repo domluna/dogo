@@ -1,8 +1,8 @@
 package dogo
 
 import (
-	"testing"
 	"os"
+	"testing"
 )
 
 func TestEnvAuth(t *testing.T) {
@@ -16,7 +16,7 @@ func TestEnvAuth(t *testing.T) {
 
 	os.Setenv("DIGITALOCEAN_API_KEY", "awesomekey")
 	auth, err = EnvAuth()
-	if err.Error()  != c {
+	if err.Error() != c {
 		t.Errorf("Expected %v, got %v", c, err)
 	}
 
