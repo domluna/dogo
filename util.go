@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-// Request sends a GET request to the endpoint and returns
+// get sends a GET request to the endpoint and returns
 // the response body.
-func Request(endpoint string) ([]byte, error) {
-	resp, err := http.Get(endpoint)
+func get(u string) ([]byte, error) {
+	resp, err := http.Get(u)
 	if err != nil {
 		return nil, err
 	}

@@ -2,12 +2,12 @@ package dogo
 
 import (
 	"fmt"
-	"strings"
 	"net/url"
+	"strings"
 )
 
 // Creates a url required to interact with DigitalOcean API.
-// 
+//
 // url is of the form https://api.digitalocean.com/v1/{service}/{id}/?{params}.
 //
 // endpoint makes up everything up to and not including {id}, in some requests
@@ -22,7 +22,7 @@ func createURL(endpoint string, id interface{}, params Params) string {
 }
 
 // Returns a queryescaped string of the passed params
-// 
+//
 // Example:
 //
 // Params{

@@ -1,10 +1,5 @@
 package dogo
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // Region represents a DigitalOcean region.
 type Region struct {
 	ID   int    `json:"id"`
@@ -28,32 +23,9 @@ var RegionsMap = map[string]int{
 
 // GetRegions gets all current available regions a droplet may be created in.
 func (c *Client) GetRegions() ([]Region, error) {
-	query := fmt.Sprintf(
-		"%s?client_id=%s&api_key=%s",
-		RegionsEndpoint,
-		c.Auth.ClientID,
-		c.Auth.APIKey,
-	)
-
-	body, err := Request(query)
+	resp, err := c.Send(RegionsEndpoint, nil, nil)
 	if err != nil {
-		return nil, err
+		return resp.Regions, err
 	}
-
-	resp := struct {
-		Status     string   `json:"status"`
-		Regions    []Region `json:"regions"`
-		ErrMessage string   `json:"error_message"`
-	}{}
-
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.Status == "ERROR" {
-		return nil, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
-	}
-
 	return resp.Regions, nil
 }

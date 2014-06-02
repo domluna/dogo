@@ -1,10 +1,5 @@
 package dogo
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 // Representation for a DigitalOcean Image.
 type Image struct {
 	ID           int    `json:"id"`
@@ -21,33 +16,11 @@ type Image struct {
 //
 // If filter is set to "global" all default images will be returned.
 func (c *Client) GetImages(filter string) ([]Image, error) {
-	query := fmt.Sprintf(
-		"%s?client_id=%s&api_key=%s&filter=%s",
-		ImagesEndpoint,
-		c.Auth.ClientID,
-		c.Auth.APIKey,
-		filter,
-	)
-
-	body, err := Request(query)
+	resp, err := c.Send(ImagesEndpoint, nil, Params{
+		"filter": filter,
+	})
 	if err != nil {
-		return nil, err
+		return resp.Images, err
 	}
-
-	resp := struct {
-		Status     string  `json:"status"`
-		Images     []Image `json:"images"`
-		ErrMessage string  `json:"error_message"`
-	}{}
-
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.Status == "ERROR" {
-		return nil, fmt.Errorf("%s: %s", resp.Status, resp.ErrMessage)
-	}
-
 	return resp.Images, nil
 }
