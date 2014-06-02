@@ -24,7 +24,7 @@ func (c *Client) GetSSHKeys() ([]SSHKey, error) {
 func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 	ks := url.QueryEscape(string(publicKey))
 	resp, err := c.Send(KeysEndpoint, "new", Params{
-		"name": name,
+		"name":        name,
 		"ssh_pub_key": ks,
 	})
 	if err != nil {
