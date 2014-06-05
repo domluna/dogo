@@ -28,18 +28,18 @@ func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 		"ssh_pub_key": ks,
 	})
 	if err != nil {
-		return resp.SSHKey, err
+		return *resp.SSHKey, err
 	}
-	return resp.SSHKey, nil
+	return *resp.SSHKey, nil
 }
 
 // GetSSHKey returns the public key, this includes the public key.
 func (c *Client) GetSSHKey(id int) (SSHKey, error) {
 	resp, err := c.Send(KeysEndpoint, id, nil)
 	if err != nil {
-		return resp.SSHKey, err
+		return *resp.SSHKey, err
 	}
-	return resp.SSHKey, nil
+	return *resp.SSHKey, nil
 }
 
 // DestroySSHKey destroys the ssh key with

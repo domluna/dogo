@@ -36,9 +36,9 @@ func (c *Client) GetDroplets() ([]Droplet, error) {
 func (c *Client) GetDroplet(id int) (Droplet, error) {
 	resp, err := c.Send(DropletsEndpoint, id, nil)
 	if err != nil {
-		return resp.Droplet, err
+		return *resp.Droplet, err
 	}
-	return resp.Droplet, nil
+	return *resp.Droplet, nil
 }
 
 // CreateDroplet creates a droplet based on based specs.
@@ -59,9 +59,9 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 		"private_networking": privateNet,
 	})
 	if err != nil {
-		return resp.Droplet, err
+		return *resp.Droplet, err
 	}
-	return resp.Droplet, nil
+	return *resp.Droplet, nil
 }
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
