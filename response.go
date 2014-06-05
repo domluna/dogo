@@ -3,6 +3,8 @@ package dogo
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
 // Response encapsulates the entire DigitalOcean API Response.
@@ -15,12 +17,12 @@ type Response struct {
 	Status     string    `json:"status"`
 	ErrMessage string    `json:"error_message,omitempty"`
 	Droplets   []Droplet `json:"droplets,omitempty"`
-	Droplet    *Droplet   `json:"droplet,omitempty"`
+	Droplet    *Droplet  `json:"droplet,omitempty"`
 	Images     []Image   `json:"images,omitempty"`
 	Regions    []Region  `json:"regions,omitempty"`
 	Sizes      []Size    `json:"sizes,omitempty"`
 	SSHKeys    []SSHKey  `json:"ssh_keys,omitempty"`
-	SSHKey     *SSHKey    `json:"ssh_key,omitempty"`
+	SSHKey     *SSHKey   `json:"ssh_key,omitempty"`
 }
 
 type Params map[string]interface{}
@@ -36,6 +38,7 @@ func (c *Client) Send(endpoint string, id interface{}, params Params) (Response,
 	u := createURL(endpoint, id, params)
 
 	var resp Response
+	// util function for reading a response for http get
 	body, err := get(u)
 	if err != nil {
 		return resp, err
@@ -51,4 +54,21 @@ func (c *Client) Send(endpoint string, id interface{}, params Params) (Response,
 	}
 
 	return resp, nil
+}
+
+// get sends a GET request to the endpoint and returns
+// the response body.
+func get(u string) ([]byte, error) {
+	resp, err := http.Get(u)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
