@@ -35,8 +35,6 @@ func (c *Client) Send(endpoint string, id interface{}, params Params) (Response,
 	params["api_key"] = c.Auth.APIKey
 	u := createURL(endpoint, id, params)
 
-	fmt.Println("URL:", u)
-
 	var resp Response
 	body, err := get(u)
 	if err != nil {
