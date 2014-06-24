@@ -15,9 +15,19 @@ type Image struct {
 // If filter is set to "my_images" user snapshots will be returned.
 //
 // If filter is set to "global" all default images will be returned.
-func (c *Client) GetImages(filter string) ([]Image, error) {
-	resp, err := c.Send(ImagesEndpoint, nil, Params{
-		"filter": filter,
+func (c *Client) GetMyImages() ([]Image, error) {
+	resp, err := c.send(ImagesEndpoint, nil, Params{
+		"filter": "my_images",
+	})
+	if err != nil {
+		return resp.Images, err
+	}
+	return resp.Images, nil
+}
+
+func (c *Client) GetAllImages() ([]Image, error) {
+	resp, err := c.send(ImagesEndpoint, nil, Params{
+		"filter": "global",
 	})
 	if err != nil {
 		return resp.Images, err

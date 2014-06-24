@@ -27,7 +27,7 @@ type Response struct {
 
 type Params map[string]interface{}
 
-func (c *Client) Send(endpoint string, id interface{}, params Params) (Response, error) {
+func (c *Client) send(endpoint string, id interface{}, params Params) (Response, error) {
 
 	if params == nil {
 		params = Params{}

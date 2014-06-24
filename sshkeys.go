@@ -13,7 +13,7 @@ type SSHKey struct {
 
 // GetSSHKeys retrieves all the users current ssh keys.
 func (c *Client) GetSSHKeys() ([]SSHKey, error) {
-	resp, err := c.Send(KeysEndpoint, nil, nil)
+	resp, err := c.send(KeysEndpoint, nil, nil)
 	if err != nil {
 		return resp.SSHKeys, err
 	}
@@ -23,7 +23,7 @@ func (c *Client) GetSSHKeys() ([]SSHKey, error) {
 // AddSSHKey adds an ssh key to the user account.
 func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 	ks := url.QueryEscape(string(publicKey))
-	resp, err := c.Send(KeysEndpoint, "new", Params{
+	resp, err := c.send(KeysEndpoint, "new", Params{
 		"name":        name,
 		"ssh_pub_key": ks,
 	})
@@ -35,7 +35,7 @@ func (c *Client) AddSSHKey(name string, publicKey []byte) (SSHKey, error) {
 
 // GetSSHKey returns the public key, this includes the public key.
 func (c *Client) GetSSHKey(id int) (SSHKey, error) {
-	resp, err := c.Send(KeysEndpoint, id, nil)
+	resp, err := c.send(KeysEndpoint, id, nil)
 	if err != nil {
 		return *resp.SSHKey, err
 	}
@@ -45,7 +45,7 @@ func (c *Client) GetSSHKey(id int) (SSHKey, error) {
 // DestroySSHKey destroys the ssh key with
 // passed id from user account.
 func (c *Client) DestroySSHKey(id int) error {
-	_, err := c.Send(KeysEndpoint, id, nil)
+	_, err := c.send(KeysEndpoint, id, nil)
 	if err != nil {
 		return err
 	}

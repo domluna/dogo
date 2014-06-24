@@ -24,7 +24,7 @@ type Droplet struct {
 
 // GetDroplets returns all users droplets, active or otherwise.
 func (c *Client) GetDroplets() ([]Droplet, error) {
-	resp, err := c.Send(DropletsEndpoint, nil, nil)
+	resp, err := c.send(DropletsEndpoint, nil, nil)
 	if err != nil {
 		return resp.Droplets, err
 	}
@@ -34,7 +34,7 @@ func (c *Client) GetDroplets() ([]Droplet, error) {
 
 // GetDroplet return an individual droplet based on the passed id.
 func (c *Client) GetDroplet(id int) (Droplet, error) {
-	resp, err := c.Send(DropletsEndpoint, id, nil)
+	resp, err := c.send(DropletsEndpoint, id, nil)
 	if err != nil {
 		return *resp.Droplet, err
 	}
@@ -49,7 +49,7 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 		ks := strconv.Itoa(k)
 		keyStr += ks + ","
 	}
-	resp, err := c.Send(DropletsEndpoint, "new", Params{
+	resp, err := c.send(DropletsEndpoint, "new", Params{
 		"name":               d.Name,
 		"size_id":            d.SizeID,
 		"image_id":           d.ImageID,
@@ -67,7 +67,7 @@ func (c *Client) CreateDroplet(d Droplet, keys []int, privateNet bool) (Droplet,
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
 func (c *Client) DestroyDroplet(id int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/destroy", id), nil)
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/destroy", id), nil)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (c *Client) DestroyDroplet(id int) error {
 // ResizeDroplet droplet resizes a droplet. Sizes are based on
 // the digitalocean sizes api.
 func (c *Client) ResizeDroplet(id, sizeID int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/resize", id), Params{
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/resize", id), Params{
 		"size_id": sizeID,
 	})
 	if err != nil {
@@ -89,7 +89,7 @@ func (c *Client) ResizeDroplet(id, sizeID int) error {
 // RebootDroplet reboots the a droplet. This is the preferred method
 // to use if a server is not responding.
 func (c *Client) RebootDroplet(id int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/reboot", id), nil)
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/reboot", id), nil)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (c *Client) RebootDroplet(id int) error {
 // useful if you want to use a different image but keep the ip address
 // of the droplet.
 func (c *Client) RebuildDroplet(id, imageID int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/rebuild", id), Params{
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/rebuild", id), Params{
 		"image_id": imageID,
 	})
 	if err != nil {
@@ -112,7 +112,7 @@ func (c *Client) RebuildDroplet(id, imageID int) error {
 // StopDroplet powers off a running droplet, the droplet will remain
 // in your account.
 func (c *Client) PowerOffDroplet(id int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/power_off", id), nil)
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/power_off", id), nil)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func (c *Client) PowerOffDroplet(id int) error {
 
 // StartDroplet powers on a powered off droplet.
 func (c *Client) PowerOnDroplet(id int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/power_on", id), nil)
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/power_on", id), nil)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (c *Client) PowerOnDroplet(id int) error {
 // SnapshotDroplet allows you to take a snapshot of a droplet once it is
 // powered off. Be aware this may reboot the droplet.
 func (c *Client) SnapshotDroplet(id int, name string) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/snapshot", id), Params{
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/snapshot", id), Params{
 		"name": name,
 	})
 	if err != nil {
@@ -144,7 +144,7 @@ func (c *Client) SnapshotDroplet(id int, name string) error {
 // or snapshot. This will be a mirror copy of the image or snapshot to
 // your droplet.
 func (c *Client) RestoreDroplet(id, imageID int) error {
-	_, err := c.Send(DropletsEndpoint, fmt.Sprintf("%d/restore", id), Params{
+	_, err := c.send(DropletsEndpoint, fmt.Sprintf("%d/restore", id), Params{
 		"image_id": imageID,
 	})
 	if err != nil {

@@ -23,7 +23,7 @@ var RegionsMap = map[string]int{
 
 // GetRegions gets all current available regions a droplet may be created in.
 func (c *Client) GetRegions() ([]Region, error) {
-	resp, err := c.Send(RegionsEndpoint, nil, nil)
+	resp, err := c.send(RegionsEndpoint, nil, nil)
 	if err != nil {
 		return resp.Regions, err
 	}

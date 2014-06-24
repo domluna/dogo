@@ -24,7 +24,7 @@ var SizesMap = map[string]int{
 
 // GetSizes returns all currently available droplet sizes.
 func (c *Client) GetSizes() ([]Size, error) {
-	resp, err := c.Send(SizesEndpoint, nil, nil)
+	resp, err := c.send(SizesEndpoint, nil, nil)
 	if err != nil {
 		return nil, err
 	}
