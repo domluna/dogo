@@ -3,23 +3,23 @@ package dogo
 import (
 	"fmt"
 	"strconv"
-	"time"
 )
 
 // Droplet respresents a digitalocean droplet.
+// TODO: make networks and kernel types
 type Droplet struct {
-	ID               int       `json:"id"`
-	Name             string    `json:"name"`
-	ImageID          int       `json:"image_id"`
-	SizeID           int       `json:"size_id"`
-	RegionID         int       `json:"region_id"`
-	BackupsActive    bool      `json:"backups_active"`
-	IPAddress        string    `json:"ip_address"`
-	PrivateIPAddress string    `json:"private_ip_address,omitempty"`
-	Snapshots        []Image   `json:"snapshots,omitempty"`
-	Locked           bool      `json:"locked"`
-	Status           string    `json:"status"`
-	CreatedAt        time.Time `json:"created_at"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Region      `json:"region"`
+	Image       `json:"image"`
+	Kernel      string `json:"kernel"`
+	Size        `json:"size"`
+	Locked      bool   `json:"locked"`
+	Status      string `json:"status"`
+	Networks    string `json:"networks"`
+	BackupIDs   []int  `json:"backups_ids"`
+	SnapshotIDs []int  `json:"snapshot_ids"`
+	ActionIDs   []int  `json:"action_ids"`
 }
 
 // GetDroplets returns all users droplets, active or otherwise.

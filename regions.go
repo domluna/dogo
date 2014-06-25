@@ -2,9 +2,10 @@ package dogo
 
 // Region represents a DigitalOcean region.
 type Region struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Slug string `json:"slug"`
+	Name      string   `json:"name"`
+	Slug      string   `json:"slug"`
+	Sizes     []string `json:"sizes"`
+	Available bool     `json:"available"`
 }
 
 // RegionsMap is a mapping between the slug

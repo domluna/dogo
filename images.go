@@ -1,20 +1,34 @@
 package dogo
 
-// Representation for a DigitalOcean Image.
-type Image struct {
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	Distribution string `json:"distribution"`
-	Slug         string `json:"slug"`
-	Public       bool   `json:"public"`
+// Kernel is a DigitalOcean Kernel.
+type Kernel struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
 }
 
-// GetImages returns DigitalOcean images, filter can either be
-// "my_images" or "global".
-//
-// If filter is set to "my_images" user snapshots will be returned.
-//
-// If filter is set to "global" all default images will be returned.
+// Snapshot is a DigitalOcean Snapshot/Backup.
+type Snapshot struct {
+	ID        int      `json:"id"`
+	Name      string   `json:"name"`
+	Dist      string   `json:"distribution"`
+	Slug      string   `json:"slug"`
+	Public    bool     `json:"public"`
+	Regions   []string `json:"regions"`
+	ActionIDs []int    `json:"action_ids"`
+}
+
+// Representation for a DigitalOcean Image.
+type Image struct {
+	ID           int      `json:"id"`
+	Name         string   `json:"name"`
+	Distribution string   `json:"distribution"`
+	Slug         string   `json:"slug"`
+	Public       bool     `json:"public"`
+	Regions      []string `json"regions"`
+}
+
+// GetMyImages gets all custom images/snapshots.
 func (c *Client) GetMyImages() ([]Image, error) {
 	resp, err := c.send(ImagesEndpoint, nil, Params{
 		"filter": "my_images",
@@ -25,6 +39,7 @@ func (c *Client) GetMyImages() ([]Image, error) {
 	return resp.Images, nil
 }
 
+// GetAllImages gets all default images.
 func (c *Client) GetAllImages() ([]Image, error) {
 	resp, err := c.send(ImagesEndpoint, nil, Params{
 		"filter": "global",

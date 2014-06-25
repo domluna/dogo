@@ -2,9 +2,16 @@ package dogo
 
 // Representation for the size of a DigitalOcean droplet.
 type Size struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Slug string `json:"slug"`
+	ID           int      `json:"id"`
+	Name         string   `json:"name"`
+	Slug         string   `json:"slug"`
+	Memory       int      `json:"memory"`
+	Vcpus        int      `json:"vcpus"`
+	Disk         int      `json:"disk"`
+	Transfer     int      `json:"transfer"`
+	PriceHourly  string   `json:"price_hourly"`
+	PriceMonthly string   `json:"price_monthly"`
+	Regions      []string `json:"regions"`
 }
 
 // SizesMap is a mapping between the slug
