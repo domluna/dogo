@@ -13,7 +13,7 @@ var (
 	DropletsEndpoint = endpoint("droplets")
 	DomainsEndpoint  = endpoint("domains")
 	ImagesEndpoint   = endpoint("images")
-	SSHKeysEndpoint  = endpoint("sshkeys")
+	KeysEndpoint     = endpoint("account/keys")
 	RegionsEndpoint  = endpoint("regions")
 	ActionsEndpoint  = endpoint("actions")
 	SizesEndpoint    = endpoint("sizes")

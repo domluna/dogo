@@ -2,38 +2,26 @@ package dogo
 
 // Representation for the size of a DigitalOcean droplet.
 type Size struct {
-	ID           int      `json:"id"`
-	Name         string   `json:"name"`
-	Slug         string   `json:"slug"`
-	Memory       int      `json:"memory"`
-	Vcpus        int      `json:"vcpus"`
-	Disk         int      `json:"disk"`
-	Transfer     int      `json:"transfer"`
-	PriceHourly  string   `json:"price_hourly"`
-	PriceMonthly string   `json:"price_monthly"`
-	Regions      []string `json:"regions"`
+	ID           int      `json:"id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Slug         string   `json:"slug,omitempty"`
+	Memory       int      `json:"memory,omitempty"`
+	Vcpus        int      `json:"vcpus,omitempty"`
+	Disk         int      `json:"disk,omitempty"`
+	Transfer     int      `json:"transfer,omitempty"`
+	PriceHourly  string   `json:"price_hourly,omitempty"`
+	PriceMonthly string   `json:"price_monthly,omitempty"`
+	Regions      []string `json:"regions,omitempty"`
 }
 
-// SizesMap is a mapping between the slug
-// representation of a droplet size to it's
-// id.
-var SizesMap = map[string]int{
-	"512MB": 66,
-	"1GB":   63,
-	"2GB":   62,
-	"4GB":   64,
-	"8GB":   65,
-	"16GB":  61,
-	"32GB":  60,
-	"48GB":  70,
-	"64GB":  69,
-}
+type Sizes []Size
 
 // GetSizes returns all currently available droplet sizes.
-func (c *Client) GetSizes() ([]Size, error) {
-	resp, err := c.send(SizesEndpoint, nil, nil)
+func (c *Client) GetSizes() (Sizes, error) {
+	var s Sizes
+	err := c.Get(SizesEndpoint, s)
 	if err != nil {
-		return nil, err
+		return s, err
 	}
-	return resp.Sizes, nil
+	return s, nil
 }

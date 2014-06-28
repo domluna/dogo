@@ -1,51 +1,82 @@
 package dogo
 
+import (
+	"time"
+	"fmt"
+)
+
 // Kernel is a DigitalOcean Kernel.
 type Kernel struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	ID      int    `json:"id,omitempty"`
+	Name    string `json:"name",omitempty`
+	Version string `json:"version,omitempty"`
 }
 
 // Snapshot is a DigitalOcean Snapshot/Backup.
 type Snapshot struct {
-	ID        int      `json:"id"`
-	Name      string   `json:"name"`
-	Dist      string   `json:"distribution"`
-	Slug      string   `json:"slug"`
-	Public    bool     `json:"public"`
-	Regions   []string `json:"regions"`
-	ActionIDs []int    `json:"action_ids"`
+	ID        int      `json:"id,omitempty"`
+	Name      string   `json:"name,omitempty"`
+	Dist      string   `json:"distribution,omitempty"`
+	Slug      string   `json:"slug,omitempty,omitempty"`
+	Public    bool     `json:"public,omitempty"`
+	Regions   []string `json:"regions,omitempty"`
+	ActionIDs []int    `json:"action_ids,omitempty"`
 }
 
 // Representation for a DigitalOcean Image.
 type Image struct {
-	ID           int      `json:"id"`
-	Name         string   `json:"name"`
-	Distribution string   `json:"distribution"`
-	Slug         string   `json:"slug"`
-	Public       bool     `json:"public"`
-	Regions      []string `json"regions"`
+	ID           int      `json:"id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Distribution string   `json:"distribution,omitempty"`
+	Slug         string   `json:"slug,omitempty,omitempty"`
+	Public       bool     `json:"public,omitempty"`
+	Regions      []string `json"regions,omitempty"`
+	CreatedAt    time.Time   `json:"created_at,omitempty"`
+}
+
+type Images []Image
+
+// GetMyImages gets all custom images/snapshots.
+func (c *Client) GetImages() (Images, error) {
+	var i Images
+	err := c.Get(ImagesEndpoint, i)
+	if err != nil {
+		return i, err
+	}
+	return i, nil
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (c *Client) GetMyImages() ([]Image, error) {
-	resp, err := c.send(ImagesEndpoint, nil, Params{
-		"filter": "my_images",
-	})
+func (c *Client) GetImage(v interface{}) (Image, error) {
+	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
+	var i Image
+	err := c.Get(u, i)
 	if err != nil {
-		return resp.Images, err
+		return i, err
 	}
-	return resp.Images, nil
+	return i, nil
 }
 
-// GetAllImages gets all default images.
-func (c *Client) GetAllImages() ([]Image, error) {
-	resp, err := c.send(ImagesEndpoint, nil, Params{
-		"filter": "global",
-	})
+// GetMyImages gets all custom images/snapshots.
+func (c *Client) DelImage(id int) error {
+	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	err := c.Del(u)
 	if err != nil {
-		return resp.Images, err
+		return err
 	}
-	return resp.Images, nil
+	return nil
+}
+
+// GetMyImages gets all custom images/snapshots.
+func (c *Client) UpdateImage(id int, name string) (Image, error) {
+	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	var i Image
+	payload := map[string]interface{}{
+		"name": name,
+	}
+	err := c.Put(u, payload, i)
+	if err != nil {
+		return i, err
+	}
+	return i, nil
 }
