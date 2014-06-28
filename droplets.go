@@ -105,7 +105,7 @@ func (c *Client) RebootDroplet(id int) error {
 func (c *Client) RebuildDroplet(id, imageID int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
-		"type": "rebuild",
+		"type":  "rebuild",
 		"image": imageID,
 	}
 	err := c.Post(u, payload, nil)
@@ -148,7 +148,7 @@ func (c *Client) PowerOnDroplet(id int) error {
 func (c *Client) RestoreDroplet(id, imageID int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
-		"type": "restore",
+		"type":  "restore",
 		"image": imageID,
 	}
 	err := c.Post(u, payload, nil)

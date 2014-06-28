@@ -1,8 +1,8 @@
 package dogo
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 // Kernel is a DigitalOcean Kernel.
@@ -25,13 +25,13 @@ type Snapshot struct {
 
 // Representation for a DigitalOcean Image.
 type Image struct {
-	ID           int      `json:"id,omitempty"`
-	Name         string   `json:"name,omitempty"`
-	Distribution string   `json:"distribution,omitempty"`
-	Slug         string   `json:"slug,omitempty,omitempty"`
-	Public       bool     `json:"public,omitempty"`
-	Regions      []string `json"regions,omitempty"`
-	CreatedAt    time.Time   `json:"created_at,omitempty"`
+	ID           int       `json:"id,omitempty"`
+	Name         string    `json:"name,omitempty"`
+	Distribution string    `json:"distribution,omitempty"`
+	Slug         string    `json:"slug,omitempty,omitempty"`
+	Public       bool      `json:"public,omitempty"`
+	Regions      []string  `json"regions,omitempty"`
+	CreatedAt    time.Time `json:"created_at,omitempty"`
 }
 
 type Images []Image
