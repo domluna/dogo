@@ -1,4 +1,5 @@
 /*
+TODO: REDO ALL OF THIS
 Package dogo provides an client to the DigitalOcean API.
 
 Creation of a Client:
