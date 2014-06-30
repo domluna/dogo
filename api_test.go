@@ -40,6 +40,13 @@ func TestGet(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Printf("Droplets: %v\n", d)
+
+	sc := SizeClient{c}
+	s, err := sc.GetSizes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("Sizes: %v\n", s)
 }
 
 func TestPost(t *testing.T) {

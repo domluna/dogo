@@ -17,15 +17,13 @@ type RegionClient struct {
 
 // GetRegions gets all current available regions a droplet may be created in.
 func (rc *RegionClient) GetRegions() (Regions, error) {
-	var r Regions
-	req, err := rc.Client.Get(RegionsEndpoint)
+	s := struct {
+		Regions `json"regions,omitempty"`
+		Meta    `json"meta,omitempty"`
+	}{}
+	err := rc.Get(RegionsEndpoint, &s)
 	if err != nil {
-		return r, err
+		return s.Regions, err
 	}
-
-	err = rc.Client.DoRequest(req, &r)
-	if err != nil {
-		return r, err
-	}
-	return r, nil
+	return s.Regions, nil
 }

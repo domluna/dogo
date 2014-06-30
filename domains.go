@@ -17,61 +17,47 @@ type DomainClient struct {
 }
 
 func (dc *DomainClient) GetDomains() (Domains, error) {
-	var d Domains
-	req, err := dc.Client.Get(DomainsEndpoint)
+	s := struct{
+		Domains `json:"domains,omitempty"`
+		Meta `json:"meta,omitempty"`
+	}{}
+	err := dc.Get(DomainsEndpoint, &s)
 	if err != nil {
-		return d, err
+		return nil, err
 	}
-
-	err = dc.Client.DoRequest(req, &d)
-	if err != nil {
-		return d, err
-	}
-	return d, nil
+	return s.Domains, nil
 }
 
 func (dc *DomainClient) GetDomain(name string) (Domain, error) {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
-	var d Domain
-	req, err := dc.Client.Get(u)
+	s := struct{
+		Domain `json:"domains,omitempty"`
+	}{}
+	err := dc.Get(u, &s)
 	if err != nil {
-		return d, err
+		return s.Domain, err
 	}
-
-	err = dc.Client.DoRequest(req, &d)
-	if err != nil {
-		return d, err
-	}
-	return d, nil
+	return s.Domain, nil
 }
 
 func (dc *DomainClient) CreateDomain(name string, ip string) (Domain, error) {
+	s := struct{
+		Domain `json:"domains,omitempty"`
+	}{}
 	payload := map[string]interface{}{
 		"name":       name,
 		"ip_address": ip,
 	}
-
-	var d Domain
-	req, err := dc.Client.Post(DomainsEndpoint, payload)
+	err := dc.Post(DomainsEndpoint, payload, &s)
 	if err != nil {
-		return d, err
+		return s.Domain, err
 	}
-
-	err = dc.Client.DoRequest(req, &d)
-	if err != nil {
-		return d, err
-	}
-	return d, nil
+	return s.Domain, nil
 }
 
 func (dc *DomainClient) DelDomain(name string) error {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
-	req, err := dc.Client.Del(u)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
+	err := dc.Del(u)
 	if err != nil {
 		return err
 	}

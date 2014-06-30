@@ -22,15 +22,13 @@ type SizeClient struct {
 
 // GetSizes returns all currently available droplet sizes.
 func (sc *SizeClient) GetSizes() (Sizes, error) {
-	var s Sizes
-	req, err := sc.Client.Get(SizesEndpoint)
+	s := struct {
+		Sizes `json:"sizes,omitempty"`
+		Meta  `json:"meta,omitempty"`
+	}{}
+	err := sc.Client.Get(SizesEndpoint, &s)
 	if err != nil {
-		return s, err
+		return s.Sizes, err
 	}
-
-	sc.Client.DoRequest(req, &s)
-	if err != nil {
-		return s, err
-	}
-	return s, nil
+	return s.Sizes, nil
 }

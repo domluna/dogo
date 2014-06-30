@@ -42,43 +42,35 @@ type ImageClient struct {
 
 // GetMyImages gets all custom images/snapshots.
 func (ic *ImageClient) GetImages() (Images, error) {
-	var i Images
-	req, err := ic.Client.Get(ImagesEndpoint)
+	s := struct {
+		Images `json"images,omitempty"`
+		Meta   `json:"meta,omitempty"`
+	}{}
+	err := ic.Get(ImagesEndpoint, &s)
 	if err != nil {
-		return i, err
+		return s.Images, err
 	}
-
-	err = ic.Client.DoRequest(req, &i)
-	if err != nil {
-		return i, err
-	}
-	return i, nil
+	return s.Images, nil
 }
 
 // GetMyImages gets all custom images/snapshots.
 func (ic *ImageClient) GetImage(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
-	var i Image
-	req, err := ic.Client.Get(u)
+	s := struct {
+		Image `json"images,omitempty"`
+		Meta   `json:"meta,omitempty"`
+	}{}
+	err := ic.Get(u, &s)
 	if err != nil {
-		return i, err
+		return s.Image, err
 	}
-
-	err = ic.Client.DoRequest(req, &i)
-	if err != nil {
-		return i, err
-	}
-	return i, nil
+	return s.Image, nil
 }
 
 // GetMyImages gets all custom images/snapshots.
 func (ic *ImageClient) DelImage(id int) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	req, err := ic.Client.Del(u)
-	if err != nil {
-		return err
-	}
-	err = ic.Client.DoRequest(req, nil)
+	err := ic.Del(u)
 	if err != nil {
 		return err
 	}
@@ -88,18 +80,24 @@ func (ic *ImageClient) DelImage(id int) error {
 // GetMyImages gets all custom images/snapshots.
 func (ic *ImageClient) UpdateImage(id int, name string) (Image, error) {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	var i Image
+	s := struct {
+		Image `json"image,omitempty"`
+	}{}
 	payload := map[string]interface{}{
 		"name": name,
 	}
-	req, err := ic.Client.Put(u, payload)
+	err := ic.Put(u, payload, &s)
 	if err != nil {
-		return i, err
+		return s.Image, err
 	}
+	return s.Image, nil
+}
 
-	err = ic.Client.DoRequest(req, &i)
+func (ic *ImageClient) DoAction(id int, params map[string]interface{}) error {
+	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	err := ic.Post(u, params, nil)
 	if err != nil {
-		return i, err
+		return err
 	}
-	return i, nil
+	return nil
 }

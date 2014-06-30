@@ -30,7 +30,7 @@ func (dc *DropletClient) GetDroplets() (Droplets, error) {
 		Droplets `json:"droplets,omitempty"`
 		Meta     `json:"meta,omitempty"`
 	}{}
-	err := dc.Client.GetX(DropletsEndpoint, &s)
+	err := dc.Get(DropletsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (dc *DropletClient) GetDroplet(id int) (Droplet, error) {
 		Droplet `json:"droplet,omitempty"`
 	}{}
 
-	err := dc.Client.GetX(u, &s)
+	err := dc.Get(u, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
@@ -52,154 +52,47 @@ func (dc *DropletClient) GetDroplet(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (dc *DropletClient) CreateDroplet(opts map[string]interface{}) (Droplet, error) {
-	var d Droplet
-	req, err := dc.Client.Post(DropletsEndpoint, opts)
+func (dc *DropletClient) CreateDroplet(params map[string]interface{}) (Droplet, error) {
+	s := struct {
+		Droplet `json:"droplet,omitempty"`
+	}{}
+	err := dc.Post(DropletsEndpoint, params, &s)
 	if err != nil {
-		return d, err
+		return s.Droplet, err
 	}
-
-	err = dc.Client.DoRequest(req, &d)
-	if err != nil {
-		return d, err
-	}
-	return d, nil
+	return s.Droplet , nil
 }
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
 func (dc *DropletClient) DestroyDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
-	req, err := dc.Client.Del(u)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
+	err := dc.Del(u)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// ResizeDroplet droplet resizes a droplet. Sizes are based on
-// the digitalocean sizes api.
-func (dc *DropletClient) ResizeDroplet(id int, size string) error {
+// DoAction performs an action on a droplet with the passed id, type of action and its
+// required params are described in the DigitalOcean API.
+//	https://developers.digitalocean.com/v2/#droplet-actions
+// 
+// An example of some params:
+//	params := map[string]interface{}{
+//		"type": "resize",
+//		"size": "1024mb",
+//	}	
+// 
+// The above example specifies the type of action, in this case resizing and
+// the additional param in this case the size to resize to "1024mb".
+//
+// Params will sometimes only require the type of action and no additional params.
+//
+//
+func (dc *DropletClient) DoAction(id int, params map[string]interface{}) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type": "resize",
-		"size": size,
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// RebootDroplet reboots the a droplet. This is the preferred method
-// to use if a server is not responding.
-func (dc *DropletClient) RebootDroplet(id int) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type": "reboot",
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// RebootDroplet rebuilds a droplet with a default image. This can be
-// useful if you want to use a different image but keep the ip address
-// of the droplet.
-func (dc *DropletClient) RebuildDroplet(id, imageID int) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type":  "rebuild",
-		"image": imageID,
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// StopDroplet powers off a running droplet, the droplet will remain
-// in your account.
-func (dc *DropletClient) PowerOffDroplet(id int) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type": "power_off",
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// StartDroplet powers on a powered off droplet.
-func (dc *DropletClient) PowerOnDroplet(id int) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type": "power_on",
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// RestoreDroplet allows you to restore a droplet to a previous image
-// or snapshot. This will be a mirror copy of the image or snapshot to
-// your droplet.
-func (dc *DropletClient) RestoreDroplet(id, imageID int) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	payload := map[string]interface{}{
-		"type":  "restore",
-		"image": imageID,
-	}
-
-	req, err := dc.Client.Post(u, payload)
-	if err != nil {
-		return err
-	}
-
-	err = dc.Client.DoRequest(req, nil)
+	err := dc.Post(u, params, nil)
 	if err != nil {
 		return err
 	}

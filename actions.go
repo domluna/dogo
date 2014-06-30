@@ -23,30 +23,26 @@ type ActionClient struct {
 }
 
 func (ac *ActionClient) GetActions() (Actions, error) {
-	req, err := ac.Client.Get(ActionsEndpoint)
+	s := struct {
+		Actions `json:"actions,omitempty"`
+		Meta    `json:"meta,omitempty"`
+	}{}
+	err := ac.Get(ActionsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
-
-	var a Actions
-	err = ac.Client.DoRequest(req, &a)
-	if err != nil {
-		return nil, err
-	}
-	return a, nil
+	return s.Actions, nil
 }
 
 func (ac *ActionClient) GetAction(id int) (Action, error) {
 	u := fmt.Sprintf("%s/%d", ActionsEndpoint, id)
-	var a Action
-	req, err := ac.Client.Get(u)
+	s := struct {
+		Action `json:"action,omitempty"`
+		Meta   `json:"meta,omitempty"`
+	}{}
+	err := ac.Get(u, &s)
 	if err != nil {
-		return a, err
+		return s.Action, err
 	}
-
-	err = ac.Client.DoRequest(req, &a)
-	if err != nil {
-		return a, err
-	}
-	return a, nil
+	return s.Action, nil
 }

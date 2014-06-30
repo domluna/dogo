@@ -31,7 +31,7 @@ func EnvAuth() (Client, error) {
 	return cli, nil
 }
 
-func (c *Client) GetX(u string, v interface{}) error {
+func (c *Client) Get(u string, v interface{}) error {
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return err
@@ -44,50 +44,55 @@ func (c *Client) GetX(u string, v interface{}) error {
 	return nil
 }
 
-func (c *Client) Get(u string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", u, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	return req, nil
-}
-
-func (c *Client) Del(u string) (*http.Request, error) {
+func (c *Client) Del(u string) error {
 	req, err := http.NewRequest("DELETE", u, nil)
 	if err != nil {
-		return req, err
+		return err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return req, nil
+	err = c.DoRequest(req, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Client) Put(u string, v map[string]interface{}) (*http.Request, error) {
-	payload, err := json.Marshal(v)
+func (c *Client) Put(u string, params map[string]interface{}, v interface{}) error {
+	payload, err := json.Marshal(params)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req, err := http.NewRequest("PUT", u, bytes.NewReader(payload))
 	if err != nil {
-		return req, err
+		return err
 	}
+
 	req.Header.Set("Content-Type", "application/json")
-	return req, nil
+	c.DoRequest(req, v)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Client) Post(u string, v map[string]interface{}) (*http.Request, error) {
-	payload, err := json.Marshal(v)
+func (c *Client) Post(u string, params map[string]interface{}, v interface{}) error {
+	payload, err := json.Marshal(params)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req, err := http.NewRequest("POST", u, bytes.NewReader(payload))
 	if err != nil {
-		return req, err
+		return err
 	}
+
 	req.Header.Set("Content-Type", "application/json")
-	return req, nil
+	c.DoRequest(req, v)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Client) DoRequest(req *http.Request, v interface{}) error {
