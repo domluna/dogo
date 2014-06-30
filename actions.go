@@ -23,10 +23,15 @@ type ActionClient struct {
 }
 
 func (ac *ActionClient) GetActions() (Actions, error) {
-	var a Actions
-	err := ac.Client.Get(ActionsEndpoint, a)
+	req, err := ac.Client.Get(ActionsEndpoint)
 	if err != nil {
-		return a, err
+		return nil, err
+	}
+
+	var a Actions
+	err = ac.Client.DoRequest(req, &a)
+	if err != nil {
+		return nil, err
 	}
 	return a, nil
 }
@@ -34,7 +39,12 @@ func (ac *ActionClient) GetActions() (Actions, error) {
 func (ac *ActionClient) GetAction(id int) (Action, error) {
 	u := fmt.Sprintf("%s/%d", ActionsEndpoint, id)
 	var a Action
-	err := ac.Client.Get(u, a)
+	req, err := ac.Client.Get(u)
+	if err != nil {
+		return a, err
+	}
+
+	err = ac.Client.DoRequest(req, &a)
 	if err != nil {
 		return a, err
 	}

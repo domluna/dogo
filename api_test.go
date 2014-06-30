@@ -1,13 +1,17 @@
 package dogo
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
+	// "io/ioutil"
+	// "net/http"
+	// "net/http/httptest"
 	"os"
 	"testing"
+)
+
+const (
+	token = "bcae7169e90c0df91d95feaf61bdc0126fef129ca4b47bd8d2e8b6bdf54bfb98"
 )
 
 func TestEnvAuth(t *testing.T) {
@@ -20,6 +24,7 @@ func TestEnvAuth(t *testing.T) {
 
 	os.Setenv("DIGITALOCEAN_TOKEN", "mytokenhere")
 	temp := Client{"mytokenhere"}
+	cli, err = EnvAuth()
 	if cli != temp {
 		t.Errorf("Expected %v, got %v", temp, cli)
 	}
@@ -27,7 +32,14 @@ func TestEnvAuth(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-
+	c := Client{token}
+	dc := DropletClient{c}
+	d, err := dc.GetDroplet(1618748)
+	// d, err := dc.GetDroplets()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Printf("Droplets: %v\n", d)
 }
 
 func TestPost(t *testing.T) {

@@ -16,10 +16,19 @@ type Size struct {
 
 type Sizes []Size
 
+type SizeClient struct {
+	Client
+}
+
 // GetSizes returns all currently available droplet sizes.
-func (c *Client) GetSizes() (Sizes, error) {
+func (sc *SizeClient) GetSizes() (Sizes, error) {
 	var s Sizes
-	err := c.Get(SizesEndpoint, s)
+	req, err := sc.Client.Get(SizesEndpoint)
+	if err != nil {
+		return s, err
+	}
+
+	sc.Client.DoRequest(req, &s)
 	if err != nil {
 		return s, err
 	}

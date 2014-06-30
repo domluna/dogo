@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -30,77 +31,73 @@ func EnvAuth() (Client, error) {
 	return cli, nil
 }
 
-func (c *Client) Get(u string, obj interface{}) error {
+func (c *Client) GetX(u string, v interface{}) error {
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return err
 	}
-
-	err = c.DoRequest(req, "application/json", obj)
+	req.Header.Set("Content-Type", "application/json")
+	err = c.DoRequest(req, v)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) Del(u string) error {
+func (c *Client) Get(u string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
+}
+
+func (c *Client) Del(u string) (*http.Request, error) {
 	req, err := http.NewRequest("DELETE", u, nil)
 	if err != nil {
-		return err
+		return req, err
 	}
-
-	err = c.DoRequest(req, "application/x-www-form-urlencoded", nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return req, nil
 }
 
-func (c *Client) Put(u string, v map[string]interface{}, obj interface{}) error {
+func (c *Client) Put(u string, v map[string]interface{}) (*http.Request, error) {
 	payload, err := json.Marshal(v)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest("PUT", u, bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return req, err
 	}
-
-	err = c.DoRequest(req, "application/json", obj)
-	if err != nil {
-		return err
-	}
-	return nil
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
 }
 
-func (c *Client) Post(u string, v map[string]interface{}, obj interface{}) error {
+func (c *Client) Post(u string, v map[string]interface{}) (*http.Request, error) {
 	payload, err := json.Marshal(v)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest("POST", u, bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return req, err
 	}
-
-	err = c.DoRequest(req, "application/json", obj)
-	if err != nil {
-		return err
-	}
-	return nil
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
 }
 
-func (c *Client) DoRequest(req *http.Request, ct string, v interface{}) error {
+func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	cl := &http.Client{}
 	req.Header.Set("Authorization", "Bearer "+c.Token)
-	req.Header.Set("Content-Type", ct)
 	resp, err := cl.Do(req)
 	if err != nil {
 		return err
 	}
-	err = c.Decode(resp, v)
+	err = Decode(resp, v)
 	if err != nil {
 		return err
 	}
@@ -108,12 +105,12 @@ func (c *Client) DoRequest(req *http.Request, ct string, v interface{}) error {
 }
 
 // Decode parses the response.
-func (c *Client) Decode(resp *http.Response, v interface{}) error {
+func Decode(resp *http.Response, v interface{}) error {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("Parsing response", string(body))
 	// error code
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return errors.New(string(body))
@@ -121,6 +118,7 @@ func (c *Client) Decode(resp *http.Response, v interface{}) error {
 
 	if v != nil {
 		err := json.Unmarshal(body, &v)
+		fmt.Printf("%v\n", v)
 		if err != nil {
 			return err
 		}

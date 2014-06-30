@@ -18,7 +18,12 @@ type DomainClient struct {
 
 func (dc *DomainClient) GetDomains() (Domains, error) {
 	var d Domains
-	err := dc.Client.Get(DomainsEndpoint, d)
+	req, err := dc.Client.Get(DomainsEndpoint)
+	if err != nil {
+		return d, err
+	}
+
+	err = dc.Client.DoRequest(req, &d)
 	if err != nil {
 		return d, err
 	}
@@ -28,7 +33,12 @@ func (dc *DomainClient) GetDomains() (Domains, error) {
 func (dc *DomainClient) GetDomain(name string) (Domain, error) {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
 	var d Domain
-	err := dc.Client.Get(u, d)
+	req, err := dc.Client.Get(u)
+	if err != nil {
+		return d, err
+	}
+
+	err = dc.Client.DoRequest(req, &d)
 	if err != nil {
 		return d, err
 	}
@@ -42,7 +52,12 @@ func (dc *DomainClient) CreateDomain(name string, ip string) (Domain, error) {
 	}
 
 	var d Domain
-	err := dc.Client.Post(DomainsEndpoint, payload, d)
+	req, err := dc.Client.Post(DomainsEndpoint, payload)
+	if err != nil {
+		return d, err
+	}
+
+	err = dc.Client.DoRequest(req, &d)
 	if err != nil {
 		return d, err
 	}
@@ -51,7 +66,12 @@ func (dc *DomainClient) CreateDomain(name string, ip string) (Domain, error) {
 
 func (dc *DomainClient) DelDomain(name string) error {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
-	err := dc.Client.Del(u)
+	req, err := dc.Client.Del(u)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}

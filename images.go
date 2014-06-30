@@ -36,10 +36,19 @@ type Image struct {
 
 type Images []Image
 
+type ImageClient struct {
+	Client
+}
+
 // GetMyImages gets all custom images/snapshots.
-func (c *Client) GetImages() (Images, error) {
+func (ic *ImageClient) GetImages() (Images, error) {
 	var i Images
-	err := c.Get(ImagesEndpoint, i)
+	req, err := ic.Client.Get(ImagesEndpoint)
+	if err != nil {
+		return i, err
+	}
+
+	err = ic.Client.DoRequest(req, &i)
 	if err != nil {
 		return i, err
 	}
@@ -47,10 +56,15 @@ func (c *Client) GetImages() (Images, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (c *Client) GetImage(v interface{}) (Image, error) {
+func (ic *ImageClient) GetImage(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
 	var i Image
-	err := c.Get(u, i)
+	req, err := ic.Client.Get(u)
+	if err != nil {
+		return i, err
+	}
+
+	err = ic.Client.DoRequest(req, &i)
 	if err != nil {
 		return i, err
 	}
@@ -58,9 +72,13 @@ func (c *Client) GetImage(v interface{}) (Image, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (c *Client) DelImage(id int) error {
+func (ic *ImageClient) DelImage(id int) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	err := c.Del(u)
+	req, err := ic.Client.Del(u)
+	if err != nil {
+		return err
+	}
+	err = ic.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -68,13 +86,18 @@ func (c *Client) DelImage(id int) error {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (c *Client) UpdateImage(id int, name string) (Image, error) {
+func (ic *ImageClient) UpdateImage(id int, name string) (Image, error) {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
 	var i Image
 	payload := map[string]interface{}{
 		"name": name,
 	}
-	err := c.Put(u, payload, i)
+	req, err := ic.Client.Put(u, payload)
+	if err != nil {
+		return i, err
+	}
+
+	err = ic.Client.DoRequest(req, &i)
 	if err != nil {
 		return i, err
 	}

@@ -4,18 +4,18 @@ import "fmt"
 
 // Droplet respresents a DigitalOcean droplet.
 type Droplet struct {
-	ID          int    `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Region      Region `json:"region,omitempty"`
-	Image       Image  `json:"image,omitempty"`
-	Kernel      Kernel `json:"kernel,omitempty"`
-	Size        Size   `json:"size,omitempty"`
-	Locked      bool   `json:"locked,omitempty"`
-	Status      string `json:"status,omitempty"`
-	Networks    string `json:"networks,omitempty"`
-	BackupIDs   []int  `json:"backups_ids,omitempty"`
-	SnapshotIDs []int  `json:"snapshot_ids,omitempty"`
-	ActionIDs   []int  `json:"action_ids,omitempty"`
+	ID          int      `json:"id,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Region      Region   `json:"region,omitempty"`
+	Image       Image    `json:"image,omitempty"`
+	Kernel      Kernel   `json:"kernel,omitempty"`
+	Size        Size     `json:"size,omitempty"`
+	Locked      bool     `json:"locked,omitempty"`
+	Status      string   `json:"status,omitempty"`
+	Networks    Networks `json:"networks,omitempty"`
+	BackupIDs   []int    `json:"backups_ids,omitempty"`
+	SnapshotIDs []int    `json:"snapshot_ids,omitempty"`
+	ActionIDs   []int    `json:"action_ids,omitempty"`
 }
 
 type Droplets []Droplet
@@ -25,33 +25,41 @@ type DropletClient struct {
 }
 
 // GetDroplets returns all users droplets, active or otherwise.
-func (c *Client) GetDroplets() (Droplets, error) {
-	var d Droplets
-	err := c.Get(DropletsEndpoint, &d)
-
+func (dc *DropletClient) GetDroplets() (Droplets, error) {
+	s := struct {
+		Droplets `json:"droplets,omitempty"`
+		Meta     `json:"meta,omitempty"`
+	}{}
+	err := dc.Client.GetX(DropletsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
-	return d, nil
+	return s.Droplets, nil
 }
 
 // GetDroplet return an individual droplet based on the passed id.
-func (c *Client) GetDroplet(id int) (Droplet, error) {
+func (dc *DropletClient) GetDroplet(id int) (Droplet, error) {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
-	var d Droplet
-	err := c.Get(u, &d)
+	s := struct {
+		Droplet `json:"droplet,omitempty"`
+	}{}
 
+	err := dc.Client.GetX(u, &s)
 	if err != nil {
-		return d, err
+		return s.Droplet, err
 	}
-	return d, nil
+	return s.Droplet, nil
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (c *Client) CreateDroplet(v map[string]interface{}) (Droplet, error) {
+func (dc *DropletClient) CreateDroplet(opts map[string]interface{}) (Droplet, error) {
 	var d Droplet
-	err := c.Post(DropletsEndpoint, v, &d)
+	req, err := dc.Client.Post(DropletsEndpoint, opts)
+	if err != nil {
+		return d, err
+	}
 
+	err = dc.Client.DoRequest(req, &d)
 	if err != nil {
 		return d, err
 	}
@@ -60,10 +68,14 @@ func (c *Client) CreateDroplet(v map[string]interface{}) (Droplet, error) {
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
-func (c *Client) DestroyDroplet(id int) error {
+func (dc *DropletClient) DestroyDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
-	err := c.Del(u)
+	req, err := dc.Client.Del(u)
+	if err != nil {
+		return err
+	}
 
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -72,13 +84,19 @@ func (c *Client) DestroyDroplet(id int) error {
 
 // ResizeDroplet droplet resizes a droplet. Sizes are based on
 // the digitalocean sizes api.
-func (c *Client) ResizeDroplet(id int, size string) error {
+func (dc *DropletClient) ResizeDroplet(id int, size string) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type": "resize",
 		"size": size,
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -87,12 +105,18 @@ func (c *Client) ResizeDroplet(id int, size string) error {
 
 // RebootDroplet reboots the a droplet. This is the preferred method
 // to use if a server is not responding.
-func (c *Client) RebootDroplet(id int) error {
+func (dc *DropletClient) RebootDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type": "reboot",
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -102,13 +126,19 @@ func (c *Client) RebootDroplet(id int) error {
 // RebootDroplet rebuilds a droplet with a default image. This can be
 // useful if you want to use a different image but keep the ip address
 // of the droplet.
-func (c *Client) RebuildDroplet(id, imageID int) error {
+func (dc *DropletClient) RebuildDroplet(id, imageID int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type":  "rebuild",
 		"image": imageID,
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -117,12 +147,18 @@ func (c *Client) RebuildDroplet(id, imageID int) error {
 
 // StopDroplet powers off a running droplet, the droplet will remain
 // in your account.
-func (c *Client) PowerOffDroplet(id int) error {
+func (dc *DropletClient) PowerOffDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type": "power_off",
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -130,12 +166,18 @@ func (c *Client) PowerOffDroplet(id int) error {
 }
 
 // StartDroplet powers on a powered off droplet.
-func (c *Client) PowerOnDroplet(id int) error {
+func (dc *DropletClient) PowerOnDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type": "power_on",
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}
@@ -145,13 +187,19 @@ func (c *Client) PowerOnDroplet(id int) error {
 // RestoreDroplet allows you to restore a droplet to a previous image
 // or snapshot. This will be a mirror copy of the image or snapshot to
 // your droplet.
-func (c *Client) RestoreDroplet(id, imageID int) error {
+func (dc *DropletClient) RestoreDroplet(id, imageID int) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
 	payload := map[string]interface{}{
 		"type":  "restore",
 		"image": imageID,
 	}
-	err := c.Post(u, payload, nil)
+
+	req, err := dc.Client.Post(u, payload)
+	if err != nil {
+		return err
+	}
+
+	err = dc.Client.DoRequest(req, nil)
 	if err != nil {
 		return err
 	}

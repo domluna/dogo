@@ -11,10 +11,19 @@ type Region struct {
 
 type Regions []Region
 
+type RegionClient struct {
+	Client
+}
+
 // GetRegions gets all current available regions a droplet may be created in.
-func (c *Client) GetRegions() (Regions, error) {
+func (rc *RegionClient) GetRegions() (Regions, error) {
 	var r Regions
-	err := c.Get(RegionsEndpoint, r)
+	req, err := rc.Client.Get(RegionsEndpoint)
+	if err != nil {
+		return r, err
+	}
+
+	err = rc.Client.DoRequest(req, &r)
 	if err != nil {
 		return r, err
 	}
