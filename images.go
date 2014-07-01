@@ -8,7 +8,7 @@ import (
 // Kernel is a DigitalOcean Kernel.
 type Kernel struct {
 	ID      int    `json:"id,omitempty"`
-	Name    string `json:"name",omitempty`
+	Name    string `json:"name,omitempty"`
 	Version string `json:"version,omitempty"`
 }
 
@@ -30,23 +30,23 @@ type Image struct {
 	Distribution string    `json:"distribution,omitempty"`
 	Slug         string    `json:"slug,omitempty,omitempty"`
 	Public       bool      `json:"public,omitempty"`
-	Regions      []string  `json"regions,omitempty"`
+	Regions      []string  `json:"regions,omitempty"`
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 }
 
 type Images []Image
 
 type ImageClient struct {
-	Client
+	client Client
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) GetImages() (Images, error) {
+func (ic *ImageClient) GetAll() (Images, error) {
 	s := struct {
-		Images `json"images,omitempty"`
+		Images `json:"images,omitempty"`
 		Meta   `json:"meta,omitempty"`
 	}{}
-	err := ic.Get(ImagesEndpoint, &s)
+	err := ic.client.Get(ImagesEndpoint, &s)
 	if err != nil {
 		return s.Images, err
 	}
@@ -54,13 +54,13 @@ func (ic *ImageClient) GetImages() (Images, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) GetImage(v interface{}) (Image, error) {
+func (ic *ImageClient) Get(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
 	s := struct {
-		Image `json"images,omitempty"`
-		Meta   `json:"meta,omitempty"`
+		Image `json:"images,omitempty"`
+		Meta  `json:"meta,omitempty"`
 	}{}
-	err := ic.Get(u, &s)
+	err := ic.client.Get(u, &s)
 	if err != nil {
 		return s.Image, err
 	}
@@ -68,9 +68,9 @@ func (ic *ImageClient) GetImage(v interface{}) (Image, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) DelImage(id int) error {
+func (ic *ImageClient) Delete(id int) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	err := ic.Del(u)
+	err := ic.client.Del(u)
 	if err != nil {
 		return err
 	}
@@ -78,15 +78,15 @@ func (ic *ImageClient) DelImage(id int) error {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) UpdateImage(id int, name string) (Image, error) {
+func (ic *ImageClient) Update(id int, name string) (Image, error) {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
 	s := struct {
-		Image `json"image,omitempty"`
+		Image `json:"image,omitempty"`
 	}{}
 	payload := map[string]interface{}{
 		"name": name,
 	}
-	err := ic.Put(u, payload, &s)
+	err := ic.client.Put(u, payload, &s)
 	if err != nil {
 		return s.Image, err
 	}
@@ -95,7 +95,7 @@ func (ic *ImageClient) UpdateImage(id int, name string) (Image, error) {
 
 func (ic *ImageClient) DoAction(id int, params map[string]interface{}) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	err := ic.Post(u, params, nil)
+	err := ic.client.Post(u, params, nil)
 	if err != nil {
 		return err
 	}

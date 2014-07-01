@@ -1,15 +1,15 @@
 package dogo
 
 import (
-// "fmt"
+	"fmt"
 )
 
 type Error struct {
-	Status int
-	Type   string `json:"error,omitempty"`
-	Desc   string `json:"description,omitempty"`
+	StatusCode int
+	ID         string `json:"id,omitempty"`
+	Message    string `json:"message,omitempty"`
 }
 
 func (e Error) Error() string {
-	return ""
+	return fmt.Sprintf("%d: %s -- %s\n", e.StatusCode, e.ID, e.Message)
 }

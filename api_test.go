@@ -2,7 +2,6 @@ package dogo
 
 import (
 	// "encoding/json"
-	"fmt"
 	// "io/ioutil"
 	// "net/http"
 	// "net/http/httptest"
@@ -11,7 +10,7 @@ import (
 )
 
 const (
-	token = "bcae7169e90c0df91d95feaf61bdc0126fef129ca4b47bd8d2e8b6bdf54bfb98"
+	token = "your token here"
 )
 
 func TestEnvAuth(t *testing.T) {
@@ -28,35 +27,68 @@ func TestEnvAuth(t *testing.T) {
 	if cli != temp {
 		t.Errorf("Expected %v, got %v", temp, cli)
 	}
-
 }
 
 func TestGet(t *testing.T) {
+	t.Logf("Starting Get tests ... \n")
 	c := Client{token}
 	dc := DropletClient{c}
-	d, err := dc.GetDroplet(1618748)
-	// d, err := dc.GetDroplets()
+	_, err := dc.GetAll()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("Droplets: %v\n", d)
 
 	sc := SizeClient{c}
-	s, err := sc.GetSizes()
+	_, err = sc.GetAll()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Printf("Sizes: %v\n", s)
+
+	rc := RegionClient{c}
+	_, err = rc.GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	kc := KeyClient{c}
+	_, err = kc.GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	doc := DomainClient{c}
+	_, err = doc.GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-func TestPost(t *testing.T) {
-
+func TestCreateDroplet(t *testing.T) {
+	t.Logf("Starting Create Test ... \n")
+	c := Client{token}
+	dc := DropletClient{c}
+	droplet, err := dc.Create(map[string]interface{}{
+		"name":   "test-create",
+		"region": "nyc2",
+		"size":   "512mb",
+		"image":  4296335,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%v\n", droplet)
 }
 
 func TestPut(t *testing.T) {
 
 }
 
-func TestDel(t *testing.T) {
-
+func TestDelete(t *testing.T) {
+	t.Logf("Starting Delete Test ... \n")
+	c := Client{token}
+	dc := DropletClient{c}
+	err := dc.Destroy(1975885)
+	if err != nil {
+		t.Fatal(err)
+	}
 }

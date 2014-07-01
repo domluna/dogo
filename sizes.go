@@ -17,16 +17,16 @@ type Size struct {
 type Sizes []Size
 
 type SizeClient struct {
-	Client
+	client Client
 }
 
 // GetSizes returns all currently available droplet sizes.
-func (sc *SizeClient) GetSizes() (Sizes, error) {
+func (sc *SizeClient) GetAll() (Sizes, error) {
 	s := struct {
 		Sizes `json:"sizes,omitempty"`
 		Meta  `json:"meta,omitempty"`
 	}{}
-	err := sc.Client.Get(SizesEndpoint, &s)
+	err := sc.client.Get(SizesEndpoint, &s)
 	if err != nil {
 		return s.Sizes, err
 	}

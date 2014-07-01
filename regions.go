@@ -6,22 +6,22 @@ type Region struct {
 	Slug      string   `json:"slug,omitempty"`
 	Sizes     []string `json:"sizes,omitempty"`
 	Available bool     `json:"available,omitempty"`
-	Features  []string `json"features,omitempty"`
+	Features  []string `json:"features,omitempty"`
 }
 
 type Regions []Region
 
 type RegionClient struct {
-	Client
+	client Client
 }
 
 // GetRegions gets all current available regions a droplet may be created in.
-func (rc *RegionClient) GetRegions() (Regions, error) {
+func (rc *RegionClient) GetAll() (Regions, error) {
 	s := struct {
-		Regions `json"regions,omitempty"`
-		Meta    `json"meta,omitempty"`
+		Regions `json:"regions,omitempty"`
+		Meta    `json:"meta,omitempty"`
 	}{}
-	err := rc.Get(RegionsEndpoint, &s)
+	err := rc.client.Get(RegionsEndpoint, &s)
 	if err != nil {
 		return s.Regions, err
 	}

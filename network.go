@@ -6,15 +6,15 @@ type Networks struct {
 }
 
 type V4 struct {
-	IP      string `json"ip_address,omitempty`
-	Netmask string `json"netmask,omitempty`
-	Gateway string `json"gateway,omitempty`
-	Type    string `json"type,omitempty`
+	IP      string `json:"ip_address,omitempty"`
+	Netmask string `json:"netmask,omitempty"`
+	Gateway string `json:"gateway,omitempty"`
+	Type    string `json:"type,omitempty"`
 }
 
 type V6 struct {
-	IP      string `json"ip_address,omitempty`
-	Netmask string `json"netmask,omitempty`
-	Gateway string `json"gateway,omitempty`
-	Type    string `json"type,omitempty`
+	IP      string `json:"ip_address,omitempty"`
+	Netmask string `json:"netmask,omitempty"`
+	Gateway string `json:"gateway,omitempty"`
+	Type    string `json:"type,omitempty"`
 }

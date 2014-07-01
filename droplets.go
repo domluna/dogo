@@ -21,16 +21,16 @@ type Droplet struct {
 type Droplets []Droplet
 
 type DropletClient struct {
-	Client
+	client Client
 }
 
 // GetDroplets returns all users droplets, active or otherwise.
-func (dc *DropletClient) GetDroplets() (Droplets, error) {
+func (dc *DropletClient) GetAll() (Droplets, error) {
 	s := struct {
 		Droplets `json:"droplets,omitempty"`
 		Meta     `json:"meta,omitempty"`
 	}{}
-	err := dc.Get(DropletsEndpoint, &s)
+	err := dc.client.Get(DropletsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +38,13 @@ func (dc *DropletClient) GetDroplets() (Droplets, error) {
 }
 
 // GetDroplet return an individual droplet based on the passed id.
-func (dc *DropletClient) GetDroplet(id int) (Droplet, error) {
+func (dc *DropletClient) Get(id int) (Droplet, error) {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
 
-	err := dc.Get(u, &s)
+	err := dc.client.Get(u, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
@@ -52,22 +52,22 @@ func (dc *DropletClient) GetDroplet(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (dc *DropletClient) CreateDroplet(params map[string]interface{}) (Droplet, error) {
+func (dc *DropletClient) Create(params map[string]interface{}) (Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
-	err := dc.Post(DropletsEndpoint, params, &s)
+	err := dc.client.Post(DropletsEndpoint, params, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
-	return s.Droplet , nil
+	return s.Droplet, nil
 }
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
-func (dc *DropletClient) DestroyDroplet(id int) error {
+func (dc *DropletClient) Destroy(id int) error {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
-	err := dc.Del(u)
+	err := dc.client.Del(u)
 	if err != nil {
 		return err
 	}
@@ -77,13 +77,13 @@ func (dc *DropletClient) DestroyDroplet(id int) error {
 // DoAction performs an action on a droplet with the passed id, type of action and its
 // required params are described in the DigitalOcean API.
 //	https://developers.digitalocean.com/v2/#droplet-actions
-// 
+//
 // An example of some params:
 //	params := map[string]interface{}{
 //		"type": "resize",
 //		"size": "1024mb",
-//	}	
-// 
+//	}
+//
 // The above example specifies the type of action, in this case resizing and
 // the additional param in this case the size to resize to "1024mb".
 //
@@ -92,7 +92,7 @@ func (dc *DropletClient) DestroyDroplet(id int) error {
 //
 func (dc *DropletClient) DoAction(id int, params map[string]interface{}) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	err := dc.Post(u, params, nil)
+	err := dc.client.Post(u, params, nil)
 	if err != nil {
 		return err
 	}
