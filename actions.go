@@ -19,28 +19,28 @@ type Action struct {
 type Actions []Action
 
 type ActionClient struct {
-	Client
+	client Client
 }
 
-func (ac *ActionClient) GetActions() (Actions, error) {
+func (ac *ActionClient) GetAll() (Actions, error) {
 	s := struct {
 		Actions `json:"actions,omitempty"`
 		Meta    `json:"meta,omitempty"`
 	}{}
-	err := ac.Get(ActionsEndpoint, &s)
+	err := ac.client.Get(ActionsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
 	return s.Actions, nil
 }
 
-func (ac *ActionClient) GetAction(id int) (Action, error) {
+func (ac *ActionClient) Get(id int) (Action, error) {
 	u := fmt.Sprintf("%s/%d", ActionsEndpoint, id)
 	s := struct {
 		Action `json:"action,omitempty"`
 		Meta   `json:"meta,omitempty"`
 	}{}
-	err := ac.Get(u, &s)
+	err := ac.client.Get(u, &s)
 	if err != nil {
 		return s.Action, err
 	}
