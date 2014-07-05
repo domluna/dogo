@@ -20,8 +20,8 @@ type Client struct {
 }
 
 // NewClient creates a new Client.
-func NewClient(token string) *Client {
-	return &Client{token}
+func NewClient(token string) Client {
+	return Client{token}
 }
 
 // EnvAuth tries to get the api token from the environment
@@ -35,7 +35,7 @@ func EnvAuth() (Client, error) {
 	return cli, nil
 }
 
-func (c *Client) Get(u string, v interface{}) error {
+func (c Client) Get(u string, v interface{}) error {
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (c *Client) Get(u string, v interface{}) error {
 	return nil
 }
 
-func (c *Client) Del(u string) error {
+func (c Client) Del(u string) error {
 	req, err := http.NewRequest("DELETE", u, nil)
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (c *Client) Del(u string) error {
 	return nil
 }
 
-func (c *Client) Put(u string, params map[string]interface{}, v interface{}) error {
+func (c Client) Put(u string, params map[string]interface{}, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func (c *Client) Put(u string, params map[string]interface{}, v interface{}) err
 	return nil
 }
 
-func (c *Client) Post(u string, params map[string]interface{}, v interface{}) error {
+func (c Client) Post(u string, params map[string]interface{}, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (c *Client) Post(u string, params map[string]interface{}, v interface{}) er
 	return nil
 }
 
-func (c *Client) DoRequest(req *http.Request, v interface{}) error {
+func (c Client) DoRequest(req *http.Request, v interface{}) error {
 	cl := &http.Client{}
 	req.Header.Set("Authorization", "Bearer "+c.Token)
 	resp, err := cl.Do(req)
