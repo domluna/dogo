@@ -1,5 +1,11 @@
 package size
 
+import "github.com/domluna/dogo/digitalocean"
+
+const (
+	Endpoint = digitalocean.BaseURL + "/sizes"
+)
+
 // Representation for the size of a DigitalOcean droplet.
 type Size struct {
 	ID           int      `json:"id,omitempty"`
@@ -17,16 +23,16 @@ type Size struct {
 type Sizes []Size
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 // GetSizes returns all currently available droplet sizes.
 func (c *Client) GetAll() (Sizes, error) {
 	s := struct {
-		Sizes `json:"sizes,omitempty"`
-		Meta  `json:"meta,omitempty"`
+		Sizes             `json:"sizes,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(SizesEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return s.Sizes, err
 	}

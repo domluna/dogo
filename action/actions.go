@@ -3,6 +3,12 @@ package action
 import (
 	"fmt"
 	"time"
+
+	"github.com/domluna/dogo/digitalocean"
+)
+
+const (
+	Endpoint = digitalocean.BaseURL + "/actions"
 )
 
 type Action struct {
@@ -19,15 +25,15 @@ type Action struct {
 type Actions []Action
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 func (c *Client) GetAll() (Actions, error) {
 	s := struct {
-		Actions `json:"actions,omitempty"`
-		Meta    `json:"meta,omitempty"`
+		Actions           `json:"actions,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(ActionsEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -35,10 +41,10 @@ func (c *Client) GetAll() (Actions, error) {
 }
 
 func (c *Client) Get(id int) (Action, error) {
-	u := fmt.Sprintf("%s/%d", ActionsEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	s := struct {
-		Action `json:"action,omitempty"`
-		Meta   `json:"meta,omitempty"`
+		Action            `json:"action,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(u, &s)
 	if err != nil {

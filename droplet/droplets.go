@@ -2,40 +2,46 @@ package droplet
 
 import (
 	"fmt"
+
+	"github.com/domluna/dogo/digitalocean"
 	"github.com/domluna/dogo/image"
-	"github.com/domluna/dogo/size"
 	"github.com/domluna/dogo/region"
+	"github.com/domluna/dogo/size"
+)
+
+const (
+	Endpoint = digitalocean.BaseURL + "/droplets"
 )
 
 // Droplet respresents a DigitalOcean droplet.
 type Droplet struct {
-	ID          int      `json:"id,omitempty"`
-	Name        string   `json:"name,omitempty"`
-	Region      Region   `json:"region,omitempty"`
-	Image       Image    `json:"image,omitempty"`
-	Kernel      Kernel   `json:"kernel,omitempty"`
-	Size        Size     `json:"size,omitempty"`
-	Locked      bool     `json:"locked,omitempty"`
-	Status      string   `json:"status,omitempty"`
-	Networks    Networks `json:"networks,omitempty"`
-	BackupIDs   []int    `json:"backups_ids,omitempty"`
-	SnapshotIDs []int    `json:"snapshot_ids,omitempty"`
-	ActionIDs   []int    `json:"action_ids,omitempty"`
+	ID          int           `json:"id,omitempty"`
+	Name        string        `json:"name,omitempty"`
+	Region      region.Region `json:"region,omitempty"`
+	Image       image.Image   `json:"image,omitempty"`
+	Kernel      image.Kernel  `json:"kernel,omitempty"`
+	Size        size.Size     `json:"size,omitempty"`
+	Locked      bool          `json:"locked,omitempty"`
+	Status      string        `json:"status,omitempty"`
+	Networks    Networks      `json:"networks,omitempty"`
+	BackupIDs   []int         `json:"backups_ids,omitempty"`
+	SnapshotIDs []int         `json:"snapshot_ids,omitempty"`
+	ActionIDs   []int         `json:"action_ids,omitempty"`
 }
 
 type Droplets []Droplet
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 // GetDroplets returns all users droplets, active or otherwise.
 func (c *Client) GetAll() (Droplets, error) {
 	s := struct {
-		Droplets `json:"droplets,omitempty"`
-		Meta     `json:"meta,omitempty"`
+		Droplets          `json:"droplets,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(DropletsEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +50,7 @@ func (c *Client) GetAll() (Droplets, error) {
 
 // GetDroplet return an individual droplet based on the passed id.
 func (c *Client) Get(id int) (Droplet, error) {
-	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
@@ -61,7 +67,7 @@ func (c *Client) Create(params map[string]interface{}) (Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
-	err := c.client.Post(DropletsEndpoint, params, &s)
+	err := c.client.Post(Endpoint, params, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
@@ -71,7 +77,7 @@ func (c *Client) Create(params map[string]interface{}) (Droplet, error) {
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
 func (c *Client) Destroy(id int) error {
-	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	err := c.client.Del(u)
 	if err != nil {
 		return err
@@ -96,7 +102,7 @@ func (c *Client) Destroy(id int) error {
 //
 //
 func (c *Client) DoAction(id int, params map[string]interface{}) error {
-	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
+	u := fmt.Sprintf("%s/%d/actions", Endpoint, id)
 	err := c.client.Post(u, params, nil)
 	if err != nil {
 		return err

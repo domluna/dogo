@@ -2,6 +2,12 @@ package key
 
 import (
 	"fmt"
+
+	"github.com/domluna/dogo/digitalocean"
+)
+
+const (
+	Endpoint = digitalocean.BaseURL + "/accounts/keys"
 )
 
 // Key represents DigitalOcean ssh key.
@@ -15,16 +21,16 @@ type Key struct {
 type Keys []Key
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 // GetKeys retrieves all the users current ssh keys.
 func (c *Client) GetAll() (Keys, error) {
 	s := struct {
-		Keys `json:"ssh_keys,omitempty"`
-		Meta `json:"meta,omitempty"`
+		Keys              `json:"ssh_keys,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(KeysEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return s.Keys, err
 	}
@@ -33,7 +39,7 @@ func (c *Client) GetAll() (Keys, error) {
 
 // GetKey returns the public key, this includes the public key.
 func (c *Client) Get(v interface{}) (Key, error) {
-	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
+	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
@@ -54,7 +60,7 @@ func (c *Client) Create(name string, pk []byte) (Key, error) {
 		"name":       name,
 		"public_key": string(pk),
 	}
-	err := c.client.Post(KeysEndpoint, payload, &s)
+	err := c.client.Post(Endpoint, payload, &s)
 	if err != nil {
 		return s.Key, err
 	}
@@ -64,7 +70,7 @@ func (c *Client) Create(name string, pk []byte) (Key, error) {
 // DestroyKey destroys the ssh key with
 // passed id from user account.
 func (c *Client) Update(v interface{}, name string) (Key, error) {
-	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
+	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
@@ -78,10 +84,10 @@ func (c *Client) Update(v interface{}, name string) (Key, error) {
 	return s.Key, nil
 }
 
-// DestroyKey destroys the ssh key with
+// Destroy destroys the ssh key with
 // passed id from user account.
 func (c *Client) Destroy(v interface{}) error {
-	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
+	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	err := c.client.Del(u)
 	if err != nil {
 		return err

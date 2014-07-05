@@ -3,6 +3,12 @@ package image
 import (
 	"fmt"
 	"time"
+
+	"github.com/domluna/dogo/digitalocean"
+)
+
+const (
+	Endpoint = digitalocean.BaseURL + "/images"
 )
 
 // Kernel is a DigitalOcean Kernel.
@@ -37,16 +43,16 @@ type Image struct {
 type Images []Image
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 // GetMyImages gets all custom images/snapshots.
 func (c *Client) GetAll() (Images, error) {
 	s := struct {
-		Images `json:"images,omitempty"`
-		Meta   `json:"meta,omitempty"`
+		Images            `json:"images,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(ImagesEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return s.Images, err
 	}
@@ -55,10 +61,10 @@ func (c *Client) GetAll() (Images, error) {
 
 // GetMyImages gets all custom images/snapshots.
 func (c *Client) Get(v interface{}) (Image, error) {
-	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
+	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	s := struct {
-		Image `json:"images,omitempty"`
-		Meta  `json:"meta,omitempty"`
+		Image             `json:"images,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(u, &s)
 	if err != nil {
@@ -69,7 +75,7 @@ func (c *Client) Get(v interface{}) (Image, error) {
 
 // GetMyImages gets all custom images/snapshots.
 func (c *Client) Delete(id int) error {
-	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	err := c.client.Del(u)
 	if err != nil {
 		return err
@@ -79,7 +85,7 @@ func (c *Client) Delete(id int) error {
 
 // GetMyImages gets all custom images/snapshots.
 func (c *Client) Update(id int, name string) (Image, error) {
-	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	s := struct {
 		Image `json:"image,omitempty"`
 	}{}
@@ -94,7 +100,7 @@ func (c *Client) Update(id int, name string) (Image, error) {
 }
 
 func (c *Client) DoAction(id int, params map[string]interface{}) error {
-	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
+	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	err := c.client.Post(u, params, nil)
 	if err != nil {
 		return err

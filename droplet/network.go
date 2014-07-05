@@ -1,4 +1,4 @@
-package dogo
+package droplet
 
 type Networks struct {
 	V4 []V4 `json:"v4,omitempty"`

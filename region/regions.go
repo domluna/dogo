@@ -1,5 +1,13 @@
 package region
 
+import (
+	"github.com/domluna/dogo/digitalocean"
+)
+
+const (
+	Endpoint = digitalocean.BaseURL + "/regions"
+)
+
 // Region represents a DigitalOcean region.
 type Region struct {
 	Name      string   `json:"name,omitempty"`
@@ -12,16 +20,16 @@ type Region struct {
 type Regions []Region
 
 type Client struct {
-	client Client
+	client *digitalocean.Client
 }
 
 // GetRegions gets all current available regions a droplet may be created in.
 func (c *Client) GetAll() (Regions, error) {
 	s := struct {
-		Regions `json:"regions,omitempty"`
-		Meta    `json:"meta,omitempty"`
+		Regions           `json:"regions,omitempty"`
+		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
-	err := c.client.Get(RegionsEndpoint, &s)
+	err := c.client.Get(Endpoint, &s)
 	if err != nil {
 		return s.Regions, err
 	}

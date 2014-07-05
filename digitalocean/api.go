@@ -10,6 +10,10 @@ import (
 	"os"
 )
 
+const (
+	BaseURL = "https://api.digitalocean.com/v2"
+)
+
 // To make a new Client call NewClient.
 type Client struct {
 	Token string
