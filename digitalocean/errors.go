@@ -1,4 +1,4 @@
-package dogo
+package digitalocean
 
 import (
 	"fmt"

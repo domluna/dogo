@@ -1,4 +1,4 @@
-package dogo
+package key
 
 import (
 	"fmt"
@@ -14,17 +14,17 @@ type Key struct {
 
 type Keys []Key
 
-type KeyClient struct {
+type Client struct {
 	client Client
 }
 
 // GetKeys retrieves all the users current ssh keys.
-func (kc *KeyClient) GetAll() (Keys, error) {
+func (c *Client) GetAll() (Keys, error) {
 	s := struct {
 		Keys `json:"ssh_keys,omitempty"`
 		Meta `json:"meta,omitempty"`
 	}{}
-	err := kc.client.Get(KeysEndpoint, &s)
+	err := c.client.Get(KeysEndpoint, &s)
 	if err != nil {
 		return s.Keys, err
 	}
@@ -32,12 +32,12 @@ func (kc *KeyClient) GetAll() (Keys, error) {
 }
 
 // GetKey returns the public key, this includes the public key.
-func (kc *KeyClient) Get(v interface{}) (Key, error) {
+func (c *Client) Get(v interface{}) (Key, error) {
 	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
-	err := kc.client.Get(u, &s)
+	err := c.client.Get(u, &s)
 	if err != nil {
 		return s.Key, err
 	}
@@ -46,7 +46,7 @@ func (kc *KeyClient) Get(v interface{}) (Key, error) {
 }
 
 // CreateKey adds an ssh key to the user account.
-func (kc *KeyClient) Create(name string, pk []byte) (Key, error) {
+func (c *Client) Create(name string, pk []byte) (Key, error) {
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
@@ -54,7 +54,7 @@ func (kc *KeyClient) Create(name string, pk []byte) (Key, error) {
 		"name":       name,
 		"public_key": string(pk),
 	}
-	err := kc.client.Post(KeysEndpoint, payload, &s)
+	err := c.client.Post(KeysEndpoint, payload, &s)
 	if err != nil {
 		return s.Key, err
 	}
@@ -63,7 +63,7 @@ func (kc *KeyClient) Create(name string, pk []byte) (Key, error) {
 
 // DestroyKey destroys the ssh key with
 // passed id from user account.
-func (kc *KeyClient) Update(v interface{}, name string) (Key, error) {
+func (c *Client) Update(v interface{}, name string) (Key, error) {
 	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
@@ -71,7 +71,7 @@ func (kc *KeyClient) Update(v interface{}, name string) (Key, error) {
 	payload := map[string]interface{}{
 		"name": name,
 	}
-	err := kc.client.Post(u, payload, &s)
+	err := c.client.Post(u, payload, &s)
 	if err != nil {
 		return s.Key, err
 	}
@@ -80,9 +80,9 @@ func (kc *KeyClient) Update(v interface{}, name string) (Key, error) {
 
 // DestroyKey destroys the ssh key with
 // passed id from user account.
-func (kc *KeyClient) Destroy(v interface{}) error {
+func (c *Client) Destroy(v interface{}) error {
 	u := fmt.Sprintf("%s/%v", KeysEndpoint, v)
-	err := kc.client.Del(u)
+	err := c.client.Del(u)
 	if err != nil {
 		return err
 	}

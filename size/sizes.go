@@ -1,4 +1,4 @@
-package dogo
+package size
 
 // Representation for the size of a DigitalOcean droplet.
 type Size struct {
@@ -16,17 +16,17 @@ type Size struct {
 
 type Sizes []Size
 
-type SizeClient struct {
+type Client struct {
 	client Client
 }
 
 // GetSizes returns all currently available droplet sizes.
-func (sc *SizeClient) GetAll() (Sizes, error) {
+func (c *Client) GetAll() (Sizes, error) {
 	s := struct {
 		Sizes `json:"sizes,omitempty"`
 		Meta  `json:"meta,omitempty"`
 	}{}
-	err := sc.client.Get(SizesEndpoint, &s)
+	err := c.client.Get(SizesEndpoint, &s)
 	if err != nil {
 		return s.Sizes, err
 	}

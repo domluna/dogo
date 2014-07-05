@@ -1,4 +1,4 @@
-package dogo
+package image
 
 import (
 	"fmt"
@@ -36,17 +36,17 @@ type Image struct {
 
 type Images []Image
 
-type ImageClient struct {
+type Client struct {
 	client Client
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) GetAll() (Images, error) {
+func (c *Client) GetAll() (Images, error) {
 	s := struct {
 		Images `json:"images,omitempty"`
 		Meta   `json:"meta,omitempty"`
 	}{}
-	err := ic.client.Get(ImagesEndpoint, &s)
+	err := c.client.Get(ImagesEndpoint, &s)
 	if err != nil {
 		return s.Images, err
 	}
@@ -54,13 +54,13 @@ func (ic *ImageClient) GetAll() (Images, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) Get(v interface{}) (Image, error) {
+func (c *Client) Get(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", ImagesEndpoint, v)
 	s := struct {
 		Image `json:"images,omitempty"`
 		Meta  `json:"meta,omitempty"`
 	}{}
-	err := ic.client.Get(u, &s)
+	err := c.client.Get(u, &s)
 	if err != nil {
 		return s.Image, err
 	}
@@ -68,9 +68,9 @@ func (ic *ImageClient) Get(v interface{}) (Image, error) {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) Delete(id int) error {
+func (c *Client) Delete(id int) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	err := ic.client.Del(u)
+	err := c.client.Del(u)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (ic *ImageClient) Delete(id int) error {
 }
 
 // GetMyImages gets all custom images/snapshots.
-func (ic *ImageClient) Update(id int, name string) (Image, error) {
+func (c *Client) Update(id int, name string) (Image, error) {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
 	s := struct {
 		Image `json:"image,omitempty"`
@@ -86,16 +86,16 @@ func (ic *ImageClient) Update(id int, name string) (Image, error) {
 	payload := map[string]interface{}{
 		"name": name,
 	}
-	err := ic.client.Put(u, payload, &s)
+	err := c.client.Put(u, payload, &s)
 	if err != nil {
 		return s.Image, err
 	}
 	return s.Image, nil
 }
 
-func (ic *ImageClient) DoAction(id int, params map[string]interface{}) error {
+func (c *Client) DoAction(id int, params map[string]interface{}) error {
 	u := fmt.Sprintf("%s/%d", ImagesEndpoint, id)
-	err := ic.client.Post(u, params, nil)
+	err := c.client.Post(u, params, nil)
 	if err != nil {
 		return err
 	}

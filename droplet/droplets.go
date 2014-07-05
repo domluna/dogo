@@ -1,6 +1,11 @@
-package dogo
+package droplet
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/domluna/dogo/image"
+	"github.com/domluna/dogo/size"
+	"github.com/domluna/dogo/region"
+)
 
 // Droplet respresents a DigitalOcean droplet.
 type Droplet struct {
@@ -20,17 +25,17 @@ type Droplet struct {
 
 type Droplets []Droplet
 
-type DropletClient struct {
+type Client struct {
 	client Client
 }
 
 // GetDroplets returns all users droplets, active or otherwise.
-func (dc *DropletClient) GetAll() (Droplets, error) {
+func (c *Client) GetAll() (Droplets, error) {
 	s := struct {
 		Droplets `json:"droplets,omitempty"`
 		Meta     `json:"meta,omitempty"`
 	}{}
-	err := dc.client.Get(DropletsEndpoint, &s)
+	err := c.client.Get(DropletsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +43,13 @@ func (dc *DropletClient) GetAll() (Droplets, error) {
 }
 
 // GetDroplet return an individual droplet based on the passed id.
-func (dc *DropletClient) Get(id int) (Droplet, error) {
+func (c *Client) Get(id int) (Droplet, error) {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
 
-	err := dc.client.Get(u, &s)
+	err := c.client.Get(u, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
@@ -52,11 +57,11 @@ func (dc *DropletClient) Get(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (dc *DropletClient) Create(params map[string]interface{}) (Droplet, error) {
+func (c *Client) Create(params map[string]interface{}) (Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
-	err := dc.client.Post(DropletsEndpoint, params, &s)
+	err := c.client.Post(DropletsEndpoint, params, &s)
 	if err != nil {
 		return s.Droplet, err
 	}
@@ -65,9 +70,9 @@ func (dc *DropletClient) Create(params map[string]interface{}) (Droplet, error) 
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
-func (dc *DropletClient) Destroy(id int) error {
+func (c *Client) Destroy(id int) error {
 	u := fmt.Sprintf("%s/%d", DropletsEndpoint, id)
-	err := dc.client.Del(u)
+	err := c.client.Del(u)
 	if err != nil {
 		return err
 	}
@@ -90,9 +95,9 @@ func (dc *DropletClient) Destroy(id int) error {
 // Params will sometimes only require the type of action and no additional params.
 //
 //
-func (dc *DropletClient) DoAction(id int, params map[string]interface{}) error {
+func (c *Client) DoAction(id int, params map[string]interface{}) error {
 	u := fmt.Sprintf("%s/%d/actions", DropletsEndpoint, id)
-	err := dc.client.Post(u, params, nil)
+	err := c.client.Post(u, params, nil)
 	if err != nil {
 		return err
 	}

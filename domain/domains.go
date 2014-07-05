@@ -12,35 +12,35 @@ type Domain struct {
 
 type Domains []Domain
 
-type DomainClient struct {
+type Client struct {
 	client Client
 }
 
-func (dc *DomainClient) GetAll() (Domains, error) {
+func (c *Client) GetAll() (Domains, error) {
 	s := struct {
 		Domains `json:"domains,omitempty"`
 		Meta    `json:"meta,omitempty"`
 	}{}
-	err := dc.client.Get(DomainsEndpoint, &s)
+	err := c.client.Get(DomainsEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
 	return s.Domains, nil
 }
 
-func (dc *DomainClient) Get(name string) (Domain, error) {
+func (c *Client) Get(name string) (Domain, error) {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
 	s := struct {
 		Domain `json:"domains,omitempty"`
 	}{}
-	err := dc.client.Get(u, &s)
+	err := c.client.Get(u, &s)
 	if err != nil {
 		return s.Domain, err
 	}
 	return s.Domain, nil
 }
 
-func (dc *DomainClient) Create(name string, ip string) (Domain, error) {
+func (c *Client) Create(name string, ip string) (Domain, error) {
 	s := struct {
 		Domain `json:"domains,omitempty"`
 	}{}
@@ -48,16 +48,16 @@ func (dc *DomainClient) Create(name string, ip string) (Domain, error) {
 		"name":       name,
 		"ip_address": ip,
 	}
-	err := dc.client.Post(DomainsEndpoint, payload, &s)
+	err := c.client.Post(DomainsEndpoint, payload, &s)
 	if err != nil {
 		return s.Domain, err
 	}
 	return s.Domain, nil
 }
 
-func (dc *DomainClient) Delete(name string) error {
+func (c *Client) Delete(name string) error {
 	u := fmt.Sprintf("%s/%s", DomainsEndpoint, name)
-	err := dc.client.Del(u)
+	err := c.client.Del(u)
 	if err != nil {
 		return err
 	}

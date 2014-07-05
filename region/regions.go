@@ -1,4 +1,4 @@
-package dogo
+package region
 
 // Region represents a DigitalOcean region.
 type Region struct {
@@ -11,17 +11,17 @@ type Region struct {
 
 type Regions []Region
 
-type RegionClient struct {
+type Client struct {
 	client Client
 }
 
 // GetRegions gets all current available regions a droplet may be created in.
-func (rc *RegionClient) GetAll() (Regions, error) {
+func (c *Client) GetAll() (Regions, error) {
 	s := struct {
 		Regions `json:"regions,omitempty"`
 		Meta    `json:"meta,omitempty"`
 	}{}
-	err := rc.client.Get(RegionsEndpoint, &s)
+	err := c.client.Get(RegionsEndpoint, &s)
 	if err != nil {
 		return s.Regions, err
 	}
