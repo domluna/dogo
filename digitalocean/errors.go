@@ -1,15 +1,20 @@
 package digitalocean
 
 import (
+	"errors"
 	"fmt"
 )
 
-type Error struct {
+var (
+	EnvError = errors.New("DIGITALOCEAN_TOKEN not found in environment")
+)
+
+type APIError struct {
 	StatusCode int
 	ID         string `json:"id,omitempty"`
 	Message    string `json:"message,omitempty"`
 }
 
-func (e Error) Error() string {
-	return fmt.Sprintf("%d: %s -- %s\n", e.StatusCode, e.ID, e.Message)
+func (e *APIError) Error() string {
+	return fmt.Sprintf("%d %s: %s\n", e.StatusCode, e.ID, e.Message)
 }

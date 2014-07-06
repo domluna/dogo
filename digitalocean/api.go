@@ -3,7 +3,6 @@ package digitalocean
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -26,13 +25,12 @@ func NewClient(token string) Client {
 
 // EnvAuth tries to get the api token from the environment
 // variable DIGITALOCEAN_TOKEN.
-func EnvAuth() (Client, error) {
-	var cli Client
-	cli.Token = os.Getenv("DIGITALOCEAN_TOKEN")
-	if cli.Token == "" {
-		return cli, errors.New("DIGITALOCEAN_TOKEN not found in environment")
+func EnvAuth() (string, error) {
+	token := os.Getenv("DIGITALOCEAN_TOKEN")
+	if token == "" {
+		return "", EnvError
 	}
-	return cli, nil
+	return token, nil
 }
 
 func (c Client) Get(u string, v interface{}) error {
@@ -120,9 +118,16 @@ func Decode(resp *http.Response, v interface{}) error {
 		return err
 	}
 	fmt.Println("Parsing response", string(body))
-	// error code
+	// create error
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		return errors.New(string(body))
+		apiErr := &APIError{
+			StatusCode: resp.StatusCode,
+		}
+		err := json.Unmarshal(body, apiErr)
+		if err != nil {
+			return err
+		}
+		return apiErr
 	}
 
 	if v != nil {
