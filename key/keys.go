@@ -21,7 +21,11 @@ type Key struct {
 type Keys []Key
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 // GetKeys retrieves all the users current ssh keys.

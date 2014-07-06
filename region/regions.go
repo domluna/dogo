@@ -20,7 +20,11 @@ type Region struct {
 type Regions []Region
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 // GetRegions gets all current available regions a droplet may be created in.

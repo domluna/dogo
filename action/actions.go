@@ -25,7 +25,11 @@ type Action struct {
 type Actions []Action
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 func (c *Client) GetAll() (Actions, error) {

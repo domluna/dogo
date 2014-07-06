@@ -32,7 +32,11 @@ type Droplet struct {
 type Droplets []Droplet
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 // GetDroplets returns all users droplets, active or otherwise.

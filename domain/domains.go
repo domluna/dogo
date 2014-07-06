@@ -19,7 +19,11 @@ type Domain struct {
 type Domains []Domain
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 func (c *Client) GetAll() (Domains, error) {

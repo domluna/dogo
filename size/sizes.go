@@ -23,7 +23,11 @@ type Size struct {
 type Sizes []Size
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 // GetSizes returns all currently available droplet sizes.

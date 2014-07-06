@@ -43,7 +43,11 @@ type Image struct {
 type Images []Image
 
 type Client struct {
-	client *digitalocean.Client
+	client digitalocean.Client
+}
+
+func NewClient(token string) *Client {
+	return &Client{digitalocean.NewClient(token)}
 }
 
 // GetMyImages gets all custom images/snapshots.
