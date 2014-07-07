@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Endpoint = digitalocean.BaseURL + "/accounts/keys"
+	Endpoint = digitalocean.BaseURL + "/account/keys"
 )
 
 // Key represents DigitalOcean ssh key.
@@ -45,7 +45,7 @@ func (c *Client) GetAll() (Keys, error) {
 func (c *Client) Get(v interface{}) (Key, error) {
 	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	s := struct {
-		Key `json:"ssh_keys,omitempty"`
+		Key `json:"ssh_key,omitempty"`
 	}{}
 	err := c.client.Get(u, &s)
 	if err != nil {
