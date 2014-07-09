@@ -22,35 +22,35 @@ $ export $DIGITALOCEAN_TOKEN="token"
 
 You could authenticate like so:
 
-import (
-	"github.com/domluna/dogo/digitalocean"
-)
+	import (
+		"github.com/domluna/dogo/digitalocean"
+	)
 
-func main() {
-	token, err := digitalocean.EnvAuth()
-	if err != nil {
-		// make sure the env variable is set
+	func main() {
+		token, err := digitalocean.EnvAuth()
+		if err != nil {
+			// make sure the env variable is set
+		}
+		// use token with client apis
 	}
-	// use token with client apis
-}
 
 For example using the droplet client will go as follows:
 
-import (
-	"github.com/domluna/dogo/droplet"
-)
+	import (
+		"github.com/domluna/dogo/droplet"
+	)
 
-func main() {
-	cli := droplet.NewClient("your token here")
+	func main() {
+		cli := droplet.NewClient("your token here")
 
-	// get all droplets
+		// get all droplets
 
-	droplets, err := cli.GetAll()
-	if err != nil {
-		// deal with error
+		droplets, err := cli.GetAll()
+		if err != nil {
+			// deal with error
+		}
+		// do stuff with droplets
 	}
-	// do stuff with droplets
-}
 
 All interactions to DigitalOcean take place within the client.
 */
