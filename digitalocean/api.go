@@ -35,8 +35,8 @@ func EnvAuth() (string, error) {
 	return token, nil
 }
 
-func (c Client) Get(u string, v interface{}) error {
-	req, err := http.NewRequest("GET", u, nil)
+func (c Client) Get(url string, v interface{}) error {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
 	}
@@ -48,8 +48,8 @@ func (c Client) Get(u string, v interface{}) error {
 	return nil
 }
 
-func (c Client) Delete(u string) error {
-	req, err := http.NewRequest("DELETE", u, nil)
+func (c Client) Delete(url string) error {
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
@@ -61,13 +61,13 @@ func (c Client) Delete(u string) error {
 	return nil
 }
 
-func (c Client) Put(u string, params Params, v interface{}) error {
+func (c Client) Put(url string, params Params, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", u, bytes.NewReader(payload))
+	req, err := http.NewRequest("PUT", url, bytes.NewReader(payload))
 	if err != nil {
 		return err
 	}
@@ -80,13 +80,13 @@ func (c Client) Put(u string, params Params, v interface{}) error {
 	return nil
 }
 
-func (c Client) Post(u string, params Params, v interface{}) error {
+func (c Client) Post(url string, params Params, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", u, bytes.NewReader(payload))
+	req, err := http.NewRequest("POST", url, bytes.NewReader(payload))
 	if err != nil {
 		return err
 	}
