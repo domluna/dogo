@@ -3,7 +3,6 @@ package digitalocean
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,6 +11,9 @@ import (
 const (
 	BaseURL = "https://api.digitalocean.com/v2"
 )
+
+// Params are to be used in conjuction with POST or PUT.
+type Params map[string]interface{}
 
 // To make a new Client call NewClient.
 type Client struct {
@@ -46,7 +48,7 @@ func (c Client) Get(u string, v interface{}) error {
 	return nil
 }
 
-func (c Client) Del(u string) error {
+func (c Client) Delete(u string) error {
 	req, err := http.NewRequest("DELETE", u, nil)
 	if err != nil {
 		return err
@@ -59,7 +61,7 @@ func (c Client) Del(u string) error {
 	return nil
 }
 
-func (c Client) Put(u string, params map[string]interface{}, v interface{}) error {
+func (c Client) Put(u string, params Params, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
@@ -78,7 +80,7 @@ func (c Client) Put(u string, params map[string]interface{}, v interface{}) erro
 	return nil
 }
 
-func (c Client) Post(u string, params map[string]interface{}, v interface{}) error {
+func (c Client) Post(u string, params Params, v interface{}) error {
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
@@ -104,7 +106,7 @@ func (c Client) DoRequest(req *http.Request, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	err = Decode(resp, v)
+	err = decode(resp, v)
 	if err != nil {
 		return err
 	}
@@ -112,12 +114,11 @@ func (c Client) DoRequest(req *http.Request, v interface{}) error {
 }
 
 // Decode parses the response.
-func Decode(resp *http.Response, v interface{}) error {
+func decode(resp *http.Response, v interface{}) error {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	fmt.Println("Parsing response", string(body))
 	// create error
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		apiErr := &APIError{
@@ -132,7 +133,6 @@ func Decode(resp *http.Response, v interface{}) error {
 
 	if v != nil {
 		err := json.Unmarshal(body, &v)
-		fmt.Printf("%v\n", v)
 		if err != nil {
 			return err
 		}
