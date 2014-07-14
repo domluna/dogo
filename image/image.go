@@ -62,7 +62,7 @@ func (c *Client) Get(v interface{}) (Image, error) {
 // GetMyImages gets all custom images/snapshots.
 func (c *Client) Delete(id int) error {
 	u := fmt.Sprintf("%s/%d", Endpoint, id)
-	err := c.client.Del(u)
+	err := c.client.Delete(u)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (c *Client) Update(id int, name string) (Image, error) {
 	s := struct {
 		Image `json:"image,omitempty"`
 	}{}
-	payload := map[string]interface{}{
+	payload := digitalocean.Params{
 		"name": name,
 	}
 	err := c.client.Put(u, payload, &s)
@@ -85,7 +85,23 @@ func (c *Client) Update(id int, name string) (Image, error) {
 	return s.Image, nil
 }
 
-func (c *Client) DoAction(id int, params map[string]interface{}) error {
+// DoAction performs an action on a droplet with the passed id, type of action and its
+// required params are described in the DigitalOcean API.
+//	https://developers.digitalocean.com/v2/#image-actions
+//
+// An example of some params:
+//	params := digitalocean.Params{
+//		"type": "transfer",
+//		"region": "nyc2",
+//	}
+//
+// The above example specifies the type of action, in this case resizing and
+// the additional param in this case the size to resize to "1024mb".
+//
+// Params will sometimes only require the type of action and no additional params.
+//
+//
+func (c *Client) DoAction(id int, params digitalocean.Params) error {
 	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	err := c.client.Post(u, params, nil)
 	if err != nil {

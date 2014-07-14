@@ -60,7 +60,7 @@ func (c *Client) Create(name string, pk []byte) (Key, error) {
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
-	payload := map[string]interface{}{
+	payload := digitalocean.Params{
 		"name":       name,
 		"public_key": string(pk),
 	}
@@ -78,7 +78,7 @@ func (c *Client) Update(v interface{}, name string) (Key, error) {
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
-	payload := map[string]interface{}{
+	payload := digitalocean.Params{
 		"name": name,
 	}
 	err := c.client.Post(u, payload, &s)
@@ -92,7 +92,7 @@ func (c *Client) Update(v interface{}, name string) (Key, error) {
 // passed id from user account.
 func (c *Client) Destroy(v interface{}) error {
 	u := fmt.Sprintf("%s/%v", Endpoint, v)
-	err := c.client.Del(u)
+	err := c.client.Delete(u)
 	if err != nil {
 		return err
 	}

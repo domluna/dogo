@@ -67,7 +67,7 @@ func (c *Client) Get(id int) (Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (c *Client) Create(params map[string]interface{}) (Droplet, error) {
+func (c *Client) Create(params digitalocean.Params) (Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
@@ -82,7 +82,7 @@ func (c *Client) Create(params map[string]interface{}) (Droplet, error) {
 // There may be more appropriate options.
 func (c *Client) Destroy(id int) error {
 	u := fmt.Sprintf("%s/%d", Endpoint, id)
-	err := c.client.Del(u)
+	err := c.client.Delete(u)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (c *Client) Destroy(id int) error {
 //	https://developers.digitalocean.com/v2/#droplet-actions
 //
 // An example of some params:
-//	params := map[string]interface{}{
+//	params := digitalocean.Params{
 //		"type": "resize",
 //		"size": "1024mb",
 //	}
@@ -105,7 +105,7 @@ func (c *Client) Destroy(id int) error {
 // Params will sometimes only require the type of action and no additional params.
 //
 //
-func (c *Client) DoAction(id int, params map[string]interface{}) error {
+func (c *Client) DoAction(id int, params digitalocean.Params) error {
 	u := fmt.Sprintf("%s/%d/actions", Endpoint, id)
 	err := c.client.Post(u, params, nil)
 	if err != nil {

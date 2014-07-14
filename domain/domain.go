@@ -54,7 +54,7 @@ func (c *Client) Create(name string, ip string) (Domain, error) {
 	s := struct {
 		Domain `json:"domains,omitempty"`
 	}{}
-	payload := map[string]interface{}{
+	payload := digitalocean.Params{
 		"name":       name,
 		"ip_address": ip,
 	}
@@ -67,7 +67,7 @@ func (c *Client) Create(name string, ip string) (Domain, error) {
 
 func (c *Client) Delete(name string) error {
 	u := fmt.Sprintf("%s/%s", Endpoint, name)
-	err := c.client.Del(u)
+	err := c.client.Delete(u)
 	if err != nil {
 		return err
 	}

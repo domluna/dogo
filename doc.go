@@ -1,7 +1,7 @@
 /*
 Package dogo provides an client to the DigitalOcean API.
 
-The digitalocean package provides the REST API to interfact with DigitalOcean. This is
+The digitalocean package provides the REST API to interact with DigitalOcean. This is
 used under the hood in the other packages which represent the digitalocean resource.
 
 Current clients include:
@@ -44,7 +44,6 @@ For example using the droplet client will go as follows:
 		cli := droplet.NewClient("your token here")
 
 		// get all droplets
-
 		droplets, err := cli.GetAll()
 		if err != nil {
 			// deal with error
