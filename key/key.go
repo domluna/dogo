@@ -32,7 +32,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Keys, error) {
 	s := struct {
 		Keys              `json:"ssh_keys,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {

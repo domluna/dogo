@@ -35,7 +35,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Actions, error) {
 	s := struct {
 		Actions           `json:"actions,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {
@@ -48,7 +47,6 @@ func (c *Client) Get(id int) (Action, error) {
 	u := fmt.Sprintf("%s/%d", Endpoint, id)
 	s := struct {
 		Action            `json:"action,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(u, &s)
 	if err != nil {

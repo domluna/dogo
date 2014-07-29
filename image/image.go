@@ -36,7 +36,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Images, error) {
 	s := struct {
 		Images            `json:"images,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {
@@ -50,7 +49,6 @@ func (c *Client) Get(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", Endpoint, v)
 	s := struct {
 		Image             `json:"images,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(u, &s)
 	if err != nil {

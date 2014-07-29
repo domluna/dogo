@@ -49,16 +49,12 @@ func TestGet(t *testing.T) {
 					"id": 2,
 					"name": "robin"
 				}
-			],
-			"meta": {
-				"total": 1
-			}
+			]
 		}`)
 	}
 
 	s := struct {
 		Droplets []DummyDroplet `json:"droplets"`
-		Meta     `json:"meta"`
 	}{}
 
 	ts := httptest.NewServer(http.HandlerFunc(f))

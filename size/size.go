@@ -15,8 +15,8 @@ type Size struct {
 	Vcpus        int      `json:"vcpus,omitempty"`
 	Disk         int      `json:"disk,omitempty"`
 	Transfer     int      `json:"transfer,omitempty"`
-	PriceHourly  string   `json:"price_hourly,omitempty"`
-	PriceMonthly string   `json:"price_monthly,omitempty"`
+	PriceHourly  float32  `json:"price_hourly,omitempty"`
+	PriceMonthly float32  `json:"price_monthly,omitempty"`
 	Regions      []string `json:"regions,omitempty"`
 }
 
@@ -34,7 +34,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Sizes, error) {
 	s := struct {
 		Sizes             `json:"sizes,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {

@@ -3,6 +3,7 @@ package digitalocean
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -119,6 +120,7 @@ func decode(resp *http.Response, v interface{}) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(body))
 	// create error
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		apiErr := &APIError{

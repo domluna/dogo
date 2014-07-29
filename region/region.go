@@ -31,7 +31,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Regions, error) {
 	s := struct {
 		Regions           `json:"regions,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {

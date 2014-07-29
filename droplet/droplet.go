@@ -29,6 +29,37 @@ type Droplet struct {
 	ActionIDs   []int         `json:"action_ids,omitempty"`
 }
 
+// IPV4 returns the ipv4 address of the droplet.
+func (d *Droplet) IPV4() string {
+	if len(d.Networks.V4) > 0 {
+		return d.Networks.V4[0].IP
+	}
+	return ""
+}
+
+// IPV4 returns the ipv6 address of the droplet.
+func (d *Droplet) IPV6() string {
+	if len(d.Networks.V6) > 0 {
+		return d.Networks.V6[0].IP
+	}
+	return ""
+}
+
+// SizeSlug returns the size of the droplet, ex: "512mb".
+func (d *Droplet) SizeSlug() string {
+	return d.Size.Slug
+}
+
+// ImageSlug return the name of the droplet's image, ex: "Ubuntu 13.10 x64 ... "
+func (d *Droplet) ImageName() string {
+	return d.Image.Name
+}
+
+// ImageID return the id of the droplet's image, ex: 3668014
+func (d *Droplet) ImageID() int {
+	return d.Image.ID
+}
+
 type Droplets []Droplet
 
 type Client struct {
@@ -43,7 +74,6 @@ func NewClient(token string) *Client {
 func (c *Client) GetAll() (Droplets, error) {
 	s := struct {
 		Droplets          `json:"droplets,omitempty"`
-		digitalocean.Meta `json:"meta,omitempty"`
 	}{}
 	err := c.client.Get(Endpoint, &s)
 	if err != nil {
@@ -112,4 +142,43 @@ func (c *Client) DoAction(id int, params digitalocean.Params) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Client) Resize(id int, size string) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "resize",
+		"size": size,
+	})
+}
+
+func (c *Client) Rename(id int, name string) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "resize",
+		"name": name,
+	})
+}
+
+func (c *Client) EnableIPV6(id int, size string) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "enable_ipv6",
+	})
+
+}
+
+func (c *Client) EnablePrivateNetworking(id int) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "enable_private_networking",
+	})
+}
+
+func (c *Client) PowerOff(id int) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "power_off",
+	})
+}
+
+func (c *Client) PowerOn(id int) error {
+	return c.DoAction(id, digitalocean.Params{
+		"type": "power_on",
+	})
 }
