@@ -10,6 +10,42 @@ import (
 	"testing"
 )
 
+var (
+        // mux is the HTTP request multiplexer used with the test server.
+        mux *http.ServeMux
+
+        // http server used to mock api responses.
+        server *httptest.Server
+
+        // DigitalOcean client to be tested.
+        client *Client
+)
+
+// Sets up server and client on which the tests will
+// be run.
+func setup(t *testing.T) {
+        mux = http.NewServeMux()
+        server = httptest.NewServer(mux)
+        client = makeClient(t)
+        client.URL = server.URL
+}
+
+// Closes the http server when tests are done.
+func teardown() {
+        server.Close()
+}
+
+func writeJSON(w http.ResponseWriter, v interface{}) {
+        w.Header().Set("Content-Type", "application/json; charset=utf8")
+        err := json.NewEncoder(w).Encode(v)
+        if err != nil {
+                panic("writeJSON: " + err.Error())
+        }
+}
+
+// Utility function for creating a Client.
+// Also checks to make sure the functionality
+// is working as expected.
 func makeClient(t *testing.T) *Client {
 	client, err := NewClient("foo")
 	if err != nil {
@@ -51,7 +87,9 @@ func Test_NewClient_EnvNotPresent(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func Test_Get(t *testing.T) {
+        setup(t)
+        defer teardown()
 	f := func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != "GET" {
 			t.Errorf("expected method to be GET, got %v", req.Method)
@@ -74,11 +112,7 @@ func TestGet(t *testing.T) {
 		Droplets `json:"droplets"`
 	}{}
 
-	ts := httptest.NewServer(http.HandlerFunc(f))
-	defer ts.Close()
-
-	client := makeClient(t)
-	client.URL = ts.URL
+        mux.HandleFunc("/", f)
 	err := client.get("", &s)
 	if err != nil {
 		t.Error(err)
@@ -95,7 +129,9 @@ func TestGet(t *testing.T) {
 
 }
 
-func TestPost(t *testing.T) {
+func Test_Post(t *testing.T) {
+        setup(t)
+        defer teardown()
 	f := func(w http.ResponseWriter, req *http.Request) {
 		if req.Header.Get("Content-Type") != "application/json" {
 			t.Errorf("Expected application/json, got %s", req.Header.Get("Content-Type"))
@@ -128,13 +164,10 @@ func TestPost(t *testing.T) {
 		}`)
 	}
 
-	ts := httptest.NewServer(http.HandlerFunc(f))
-	defer ts.Close()
-
+        mux.HandleFunc("/", f)
 	s := struct {
 		Droplet `json:"droplet"`
 	}{}
-
 	params := Params{
 		"name":   "joker",
 		"size":   "512mb",
@@ -142,8 +175,6 @@ func TestPost(t *testing.T) {
 		"image":  42,
 	}
 
-	client := makeClient(t)
-	client.URL = ts.URL
 	err := client.post("", params, &s)
 	if err != nil {
 		t.Error(err)
@@ -156,7 +187,9 @@ func TestPost(t *testing.T) {
 
 }
 
-func TestDelete(t *testing.T) {
+func Test_Delete(t *testing.T) {
+        setup(t)
+        defer teardown()
 	f := func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != "DELETE" {
 			t.Errorf("expected method to be DELETE, got %v", req.Method)
@@ -164,18 +197,16 @@ func TestDelete(t *testing.T) {
 		fmt.Fprintln(w, "")
 	}
 
-	ts := httptest.NewServer(http.HandlerFunc(f))
-	defer ts.Close()
-
-	client := makeClient(t)
-	client.URL = ts.URL
+        mux.HandleFunc("/", f)
 	err := client.delete("")
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func TestErrMessage(t *testing.T) {
+func Test_ErrMessage(t *testing.T) {
+        setup(t)
+        defer teardown()
 	f := func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != "DELETE" {
 			t.Errorf("expected method to be DELETE, got %v", req.Method)
@@ -187,11 +218,7 @@ func TestErrMessage(t *testing.T) {
 		}`)
 	}
 
-	ts := httptest.NewServer(http.HandlerFunc(f))
-	defer ts.Close()
-
-	client := makeClient(t)
-	client.URL = ts.URL
+        mux.HandleFunc("/", f)
 	err := client.delete("")
 	errMsg := "501 prison escape: this is gotham we're talking about!"
 	if err == nil {
