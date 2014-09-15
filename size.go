@@ -1,43 +1,32 @@
-package size
-
-import "github.com/domluna/dogo/digitalocean"
+package digitalocean
 
 const (
-	Endpoint = digitalocean.BaseURL + "/sizes"
+	SizeEndpoint = "sizes"
 )
 
-// Representation for the size of a DigitalOcean droplet.
+// Size is a representation for the size of a DigitalOcean droplet.
 type Size struct {
-	ID           int      `json:"id,omitempty"`
-	Name         string   `json:"name,omitempty"`
 	Slug         string   `json:"slug,omitempty"`
 	Memory       int      `json:"memory,omitempty"`
-	Vcpus        int      `json:"vcpus,omitempty"`
+	VCPUS        int      `json:"vcpus,omitempty"`
 	Disk         int      `json:"disk,omitempty"`
 	Transfer     int      `json:"transfer,omitempty"`
-	PriceHourly  float32  `json:"price_hourly,omitempty"`
 	PriceMonthly float32  `json:"price_monthly,omitempty"`
+	PriceHourly  float32  `json:"price_hourly,omitempty"`
 	Regions      []string `json:"regions,omitempty"`
 }
 
-type Sizes []Size
-
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
+// Sizes is a list of type Size.
+type Sizes []*Size
 
 // GetSizes returns all currently available droplet sizes.
-func (c *Client) GetAll() (Sizes, error) {
+func (c *Client) ListSizes() (Sizes, error) {
 	s := struct {
-		Sizes             `json:"sizes,omitempty"`
+		Sizes `json:"sizes,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(SizeEndpoint, &s)
 	if err != nil {
-		return s.Sizes, err
+		return nil, err
 	}
 	return s.Sizes, nil
 }

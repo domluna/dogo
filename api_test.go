@@ -10,27 +10,44 @@ import (
 	"testing"
 )
 
-// Purely for testing purposes, real droplets are way cooler.
-type DummyDroplet struct {
-	ID     int    `json:"id,omitempty"`
-	Name   string `json:"name,omitempty"`
-	Region string `json:"region,omitempty"`
-	Image  int    `json:"image,omitempty"`
-	Size   string `json:"size,omitempty"`
-}
-
-func TestEnvAuth(t *testing.T) {
-	os.Setenv("DIGITALOCEAN_TOKEN", "")
-	token, err := EnvAuth()
-	if err != EnvError {
-		t.Errorf("Expected %v, got %v", EnvError, err)
+func makeClient(t *testing.T) *Client {
+	client, err := NewClient("foo")
+	if err != nil {
+		t.Fatalf("err: %s", err)
 	}
 
-	os.Setenv("DIGITALOCEAN_TOKEN", "mytokenhere")
-	temp := "mytokenhere"
-	token, err = EnvAuth()
-	if token != temp {
-		t.Errorf("Expected %v, got %v", temp, token)
+	if client.Token != "foo" {
+		t.Fatalf("Expected Token to be %v, got %v", "foo", client.Token)
+	}
+	return client
+}
+
+func Test_NewClient_EnvPresent(t *testing.T) {
+	os.Setenv("DIGITALOCEAN_TOKEN", "foo")
+	client, err := NewClient("")
+
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	if client.Token != "foo" {
+		t.Errorf("Expected Token to be %v, got %v", "foo", client.Token)
+	}
+
+	os.Setenv("DIGITALOCEAN_TOKEN", "foo")
+	client, err = NewClient("")
+}
+
+func Test_NewClient_EnvNotPresent(t *testing.T) {
+	os.Setenv("DIGITALOCEAN_TOKEN", "")
+	_, err := NewClient("")
+
+	if err == nil {
+		t.Errorf("Should be an error about DIGITALOCEAN_TOKEN not being present")
+	}
+
+	if err != EnvError {
+		t.Errorf("Expected %s, got %s", EnvError, err)
 	}
 }
 
@@ -54,14 +71,15 @@ func TestGet(t *testing.T) {
 	}
 
 	s := struct {
-		Droplets []DummyDroplet `json:"droplets"`
+		Droplets `json:"droplets"`
 	}{}
 
 	ts := httptest.NewServer(http.HandlerFunc(f))
 	defer ts.Close()
 
-	client := NewClient("not_actual_token")
-	err := client.Get(ts.URL, &s)
+	client := makeClient(t)
+	client.URL = ts.URL
+	err := client.get("", &s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -114,7 +132,7 @@ func TestPost(t *testing.T) {
 	defer ts.Close()
 
 	s := struct {
-		Droplet DummyDroplet `json:"droplet"`
+		Droplet `json:"droplet"`
 	}{}
 
 	params := Params{
@@ -124,9 +142,9 @@ func TestPost(t *testing.T) {
 		"image":  42,
 	}
 
-	client := NewClient("not_actual_token")
-
-	err := client.Post(ts.URL, params, &s)
+	client := makeClient(t)
+	client.URL = ts.URL
+	err := client.post("", params, &s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -149,8 +167,9 @@ func TestDelete(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(f))
 	defer ts.Close()
 
-	client := NewClient("not_actual_token")
-	err := client.Delete(ts.URL)
+	client := makeClient(t)
+	client.URL = ts.URL
+	err := client.delete("")
 	if err != nil {
 		t.Error(err)
 	}
@@ -171,8 +190,9 @@ func TestErrMessage(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(f))
 	defer ts.Close()
 
-	client := NewClient("not_actual_token")
-	err := client.Delete(ts.URL)
+	client := makeClient(t)
+	client.URL = ts.URL
+	err := client.delete("")
 	errMsg := "501 prison escape: this is gotham we're talking about!"
 	if err == nil {
 		t.Error("expected there to be an error")

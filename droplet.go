@@ -1,32 +1,33 @@
-package droplet
+package digitalocean
 
 import (
 	"fmt"
-
-	"github.com/domluna/dogo/digitalocean"
-	"github.com/domluna/dogo/image"
-	"github.com/domluna/dogo/region"
-	"github.com/domluna/dogo/size"
+	"time"
 )
 
 const (
-	Endpoint = digitalocean.BaseURL + "/droplets"
+	DropletEndpoint = "droplets"
 )
 
 // Droplet respresents a DigitalOcean droplet.
 type Droplet struct {
-	ID          int           `json:"id,omitempty"`
-	Name        string        `json:"name,omitempty"`
-	Region      region.Region `json:"region,omitempty"`
-	Image       image.Image   `json:"image,omitempty"`
-	Kernel      image.Kernel  `json:"kernel,omitempty"`
-	Size        size.Size     `json:"size,omitempty"`
-	Locked      bool          `json:"locked,omitempty"`
-	Status      string        `json:"status,omitempty"`
-	Networks    Networks      `json:"networks,omitempty"`
-	BackupIDs   []int         `json:"backups_ids,omitempty"`
-	SnapshotIDs []int         `json:"snapshot_ids,omitempty"`
-	ActionIDs   []int         `json:"action_ids,omitempty"`
+	ID          int       `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Memory      int       `json:"memory,omitempty"`
+	VCPUS       int       `json:"vcpus,omitempty"`
+	Disk        int       `json:"disk,omitempty"`
+	Region      Region    `json:"region,omitempty"`
+	Image       Image     `json:"image,omitempty"`
+	Kernel      Kernel    `json:"kernel,omitempty"`
+	Size        Size      `json:"size,omitempty"`
+	Locked      bool      `json:"locked,omitempty"`
+	CreatedAt   time.Time `json:"created_at,omitempty"`
+	Status      string    `json:"status,omitempty"`
+	Networks    Networks  `json:"networks,omitempty"`
+	BackupIDs   []int     `json:"backups_ids,omitempty"`
+	SnapshotIDs []int     `json:"snapshot_ids,omitempty"`
+	ActionIDs   []int     `json:"action_ids,omitempty"`
+	Features    []string  `json:"features,omitempty"`
 }
 
 // IPV4 returns the ipv4 address of the droplet.
@@ -62,20 +63,12 @@ func (d *Droplet) ImageID() int {
 
 type Droplets []Droplet
 
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
-
 // GetDroplets returns all users droplets, active or otherwise.
-func (c *Client) GetAll() (Droplets, error) {
+func (c *Client) ListDroplets() (Droplets, error) {
 	s := struct {
-		Droplets          `json:"droplets,omitempty"`
+		Droplets `json:"droplets,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(DropletEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -83,102 +76,77 @@ func (c *Client) GetAll() (Droplets, error) {
 }
 
 // GetDroplet return an individual droplet based on the passed id.
-func (c *Client) Get(id int) (Droplet, error) {
-	u := fmt.Sprintf("%s/%d", Endpoint, id)
+func (c *Client) GetDroplet(id int) (*Droplet, error) {
+	u := fmt.Sprintf("%s/%d", DropletEndpoint, id)
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
 
-	err := c.client.Get(u, &s)
+	err := c.get(u, &s)
 	if err != nil {
-		return s.Droplet, err
+		return nil, err
 	}
-	return s.Droplet, nil
+	return &s.Droplet, nil
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (c *Client) Create(params digitalocean.Params) (Droplet, error) {
+func (c *Client) CreateDroplet(params Params) (*Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
-	err := c.client.Post(Endpoint, params, &s)
+	err := c.post(DropletEndpoint, params, &s)
 	if err != nil {
-		return s.Droplet, err
+		return nil, err
 	}
-	return s.Droplet, nil
+	return &s.Droplet, nil
 }
 
 // DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
-func (c *Client) Destroy(id int) error {
-	u := fmt.Sprintf("%s/%d", Endpoint, id)
-	err := c.client.Delete(u)
+func (c *Client) DestroyDroplet(id int) error {
+	u := fmt.Sprintf("%s/%d", DropletEndpoint, id)
+	err := c.delete(u)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// DoAction performs an action on a droplet with the passed id, type of action and its
-// required params are described in the DigitalOcean API.
-//	https://developers.digitalocean.com/v2/#droplet-actions
-//
-// An example of some params:
-//	params := digitalocean.Params{
-//		"type": "resize",
-//		"size": "1024mb",
-//	}
-//
-// The above example specifies the type of action, in this case resizing and
-// the additional param in this case the size to resize to "1024mb".
-//
-// Params will sometimes only require the type of action and no additional params.
-//
-//
-func (c *Client) DoAction(id int, params digitalocean.Params) error {
-	u := fmt.Sprintf("%s/%d/actions", Endpoint, id)
-	err := c.client.Post(u, params, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Client) Resize(id int, size string) error {
-	return c.DoAction(id, digitalocean.Params{
+func (c *Client) ResizeDroplet(id int, size string) error {
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "resize",
 		"size": size,
 	})
 }
 
-func (c *Client) Rename(id int, name string) error {
-	return c.DoAction(id, digitalocean.Params{
+func (c *Client) RenameDroplet(id int, name string) error {
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "resize",
 		"name": name,
 	})
 }
 
 func (c *Client) EnableIPV6(id int, size string) error {
-	return c.DoAction(id, digitalocean.Params{
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "enable_ipv6",
 	})
 
 }
 
 func (c *Client) EnablePrivateNetworking(id int) error {
-	return c.DoAction(id, digitalocean.Params{
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "enable_private_networking",
 	})
 }
 
-func (c *Client) PowerOff(id int) error {
-	return c.DoAction(id, digitalocean.Params{
+func (c *Client) PowerOffDroplet(id int) error {
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "power_off",
 	})
 }
 
-func (c *Client) PowerOn(id int) error {
-	return c.DoAction(id, digitalocean.Params{
+func (c *Client) PowerOnDroplet(id int) error {
+	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "power_on",
 	})
 }

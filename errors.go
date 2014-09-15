@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	EnvError = errors.New("DIGITALOCEAN_TOKEN not found in environment")
+	EnvError = errors.New("DIGITALOCEAN_TOKEN not found in environment, set the variable.")
 )
 
 type APIError struct {

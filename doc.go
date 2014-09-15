@@ -53,4 +53,4 @@ For example using the droplet client will go as follows:
 
 All interactions to DigitalOcean take place within the client.
 */
-package dogo
+package digitalocean

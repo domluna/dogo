@@ -1,15 +1,11 @@
-package action
+package digitalocean
 
 import (
 	"fmt"
 	"time"
-
-	"github.com/domluna/dogo/digitalocean"
 )
 
-const (
-	Endpoint = digitalocean.BaseURL + "/actions"
-)
+const ActionEndpoint = "actions"
 
 type Action struct {
 	ID           int       `json:"id,omitempty"`
@@ -22,35 +18,27 @@ type Action struct {
 	Region       string    `json:"region,omitempty"`
 }
 
-type Actions []Action
+type Actions []*Action
 
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
-
-func (c *Client) GetAll() (Actions, error) {
+func (c *Client) ListActions() (Actions, error) {
 	s := struct {
-		Actions           `json:"actions,omitempty"`
+		Actions `json:"actions,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(ActionEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
 	return s.Actions, nil
 }
 
-func (c *Client) Get(id int) (Action, error) {
-	u := fmt.Sprintf("%s/%d", Endpoint, id)
+func (c *Client) GetAction(id int) (*Action, error) {
+	u := fmt.Sprintf("%s/%d", ActionEndpoint, id)
 	s := struct {
-		Action            `json:"action,omitempty"`
+		Action `json:"action,omitempty"`
 	}{}
-	err := c.client.Get(u, &s)
+	err := c.get(u, &s)
 	if err != nil {
-		return s.Action, err
+		return nil, err
 	}
-	return s.Action, nil
+	return &s.Action, nil
 }

@@ -1,40 +1,27 @@
-package region
+package digitalocean
 
-import (
-	"github.com/domluna/dogo/digitalocean"
-)
-
-const (
-	Endpoint = digitalocean.BaseURL + "/regions"
-)
+const RegionEndpoint = "regions"
 
 // Region represents a DigitalOcean region.
 type Region struct {
-	Name      string   `json:"name,omitempty"`
 	Slug      string   `json:"slug,omitempty"`
+	Name      string   `json:"name,omitempty"`
 	Sizes     []string `json:"sizes,omitempty"`
 	Available bool     `json:"available,omitempty"`
 	Features  []string `json:"features,omitempty"`
 }
 
-type Regions []Region
-
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
+// Regions is a list of type Region.
+type Regions []*Region
 
 // GetRegions gets all current available regions a droplet may be created in.
-func (c *Client) GetAll() (Regions, error) {
+func (c *Client) ListRegions() (Regions, error) {
 	s := struct {
-		Regions           `json:"regions,omitempty"`
+		Regions `json:"regions,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(RegionEndpoint, &s)
 	if err != nil {
-		return s.Regions, err
+		return nil, err
 	}
 	return s.Regions, nil
 }

@@ -1,72 +1,72 @@
-package dogo
+package digitalocean
 
 import (
 	"fmt"
-
-	"github.com/domluna/dogo/digitalocean"
 )
 
 const (
-	Endpoint = digitalocean.BaseURL + "/domains"
+	DomainEndpoint = "/domains"
 )
 
+// Domain is a representation of a DigitalOcean domain.
 type Domain struct {
-	Name     string `json:"name,omitempty"`
-	TTL      int    `json:"ttl,omitempty"`
+	// Name of the Domain.
+	Name string `json:"name,omitempty"`
+
+	// Defines the time frame that clients can
+	// cache queried information before a refresh should
+	// be requests.
+	TTL int `json:"ttl,omitempty"`
+
+	// Contains the complete contents of the
+	// zone file.
 	ZoneFile string `json:"zone_file,omitempty"`
 }
 
-type Domains []Domain
+// Domains is a list of Domain.
+type Domains []*Domain
 
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
-
-func (c *Client) GetAll() (Domains, error) {
+func (c *Client) ListDomains() (Domains, error) {
 	s := struct {
-		Domains           `json:"domains,omitempty"`
+		Domains `json:"domains,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(DomainEndpoint, &s)
 	if err != nil {
 		return nil, err
 	}
 	return s.Domains, nil
 }
 
-func (c *Client) Get(name string) (Domain, error) {
-	u := fmt.Sprintf("%s/%s", Endpoint, name)
+func (c *Client) GetDomain(name string) (*Domain, error) {
+	u := fmt.Sprintf("%s/%s", DomainEndpoint, name)
 	s := struct {
-		Domain `json:"domains,omitempty"`
+		Domain `json:"domain,omitempty"`
 	}{}
-	err := c.client.Get(u, &s)
+	err := c.get(u, &s)
 	if err != nil {
-		return s.Domain, err
+		return nil, err
 	}
-	return s.Domain, nil
+	return &s.Domain, nil
 }
 
-func (c *Client) Create(name string, ip string) (Domain, error) {
+func (c *Client) CreateDomain(name string, ip string) (*Domain, error) {
 	s := struct {
-		Domain `json:"domains,omitempty"`
+		Domain `json:"domain,omitempty"`
 	}{}
-	payload := digitalocean.Params{
+	payload := Params{
 		"name":       name,
 		"ip_address": ip,
 	}
-	err := c.client.Post(Endpoint, payload, &s)
+	err := c.post(DomainEndpoint, payload, &s)
 	if err != nil {
-		return s.Domain, err
+		return nil, err
 	}
-	return s.Domain, nil
+	return &s.Domain, nil
 }
 
-func (c *Client) Delete(name string) error {
-	u := fmt.Sprintf("%s/%s", Endpoint, name)
-	err := c.client.Delete(u)
+func (c *Client) DeleteDomain(name string) error {
+	u := fmt.Sprintf("%s/%s", DomainEndpoint, name)
+	err := c.delete(u)
 	if err != nil {
 		return err
 	}

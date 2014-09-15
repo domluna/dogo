@@ -1,28 +1,9 @@
-package droplet
+package digitalocean
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/domluna/dogo/digitalocean"
-)
-
-func TestGetDroplets(t *testing.T) {
-	token, err := digitalocean.EnvAuth()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	cli := NewClient(token)
-	droplets, err := cli.GetAll()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, d := range droplets {
-		fmt.Printf("%+v\n", d)
-	}
-}
+// import (
+// 	"fmt"
+// 	"testing"
+// )
 
 // func TestCreateDroplet(t *testing.T) {
 // 	token, err := digitalocean.EnvAuth()

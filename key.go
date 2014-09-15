@@ -1,14 +1,10 @@
-package key
+package digitalocean
 
 import (
 	"fmt"
-
-	"github.com/domluna/dogo/digitalocean"
 )
 
-const (
-	Endpoint = digitalocean.BaseURL + "/account/keys"
-)
+const KeyEndpoint = "account/keys"
 
 // Key represents DigitalOcean ssh key.
 type Key struct {
@@ -18,80 +14,71 @@ type Key struct {
 	SSHPublicKey string `json:"public_key,omitempty"`
 }
 
-type Keys []Key
+// Keys is a list of Key.
+type Keys []*Key
 
-type Client struct {
-	client digitalocean.Client
-}
-
-func NewClient(token string) *Client {
-	return &Client{digitalocean.NewClient(token)}
-}
-
-// GetKeys retrieves all the users current ssh keys.
-func (c *Client) GetAll() (Keys, error) {
+// ListKeys retrieves all the users current ssh keys.
+func (c *Client) ListKeys() (Keys, error) {
 	s := struct {
-		Keys              `json:"ssh_keys,omitempty"`
+		Keys `json:"ssh_keys,omitempty"`
 	}{}
-	err := c.client.Get(Endpoint, &s)
+	err := c.get(KeyEndpoint, &s)
 	if err != nil {
-		return s.Keys, err
+		return nil, err
 	}
 	return s.Keys, nil
 }
 
 // GetKey returns the public key, this includes the public key.
-func (c *Client) Get(v interface{}) (Key, error) {
-	u := fmt.Sprintf("%s/%v", Endpoint, v)
+func (c *Client) GetKey(v interface{}) (*Key, error) {
+	u := fmt.Sprintf("%s/%v", KeyEndpoint, v)
 	s := struct {
 		Key `json:"ssh_key,omitempty"`
 	}{}
-	err := c.client.Get(u, &s)
+	err := c.get(u, &s)
 	if err != nil {
-		return s.Key, err
+		return nil, err
 	}
-	return s.Key, nil
+	return &s.Key, nil
 
 }
 
 // CreateKey adds an ssh key to the user account.
-func (c *Client) Create(name string, pk []byte) (Key, error) {
+func (c *Client) CreateKey(name string, pk []byte) (*Key, error) {
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
-	payload := digitalocean.Params{
+	payload := Params{
 		"name":       name,
 		"public_key": string(pk),
 	}
-	err := c.client.Post(Endpoint, payload, &s)
+	err := c.post(KeyEndpoint, payload, &s)
 	if err != nil {
-		return s.Key, err
+		return nil, err
 	}
-	return s.Key, nil
+	return &s.Key, nil
 }
 
-// DestroyKey destroys the ssh key with
-// passed id from user account.
-func (c *Client) Update(v interface{}, name string) (Key, error) {
-	u := fmt.Sprintf("%s/%v", Endpoint, v)
+// UpdateKey updates an SSH Key. Can use the ID or FINGERPRINT of the key.
+func (c *Client) UpdateKey(name string, v interface{}) (*Key, error) {
+	u := fmt.Sprintf("%s/%v", KeyEndpoint, v)
 	s := struct {
 		Key `json:"ssh_keys,omitempty"`
 	}{}
-	payload := digitalocean.Params{
+	payload := Params{
 		"name": name,
 	}
-	err := c.client.Post(u, payload, &s)
+	err := c.post(u, payload, &s)
 	if err != nil {
-		return s.Key, err
+		return nil, err
 	}
-	return s.Key, nil
+	return &s.Key, nil
 }
 
-// Destroy destroys the ssh key with
-// passed id from user account.
-func (c *Client) Destroy(v interface{}) error {
-	u := fmt.Sprintf("%s/%v", Endpoint, v)
-	err := c.client.Delete(u)
+// DestroyKey destroys an SSH Key. Can use the ID or FINGERPRINT of the key.
+func (c *Client) DestroyKey(v interface{}) error {
+	u := fmt.Sprintf("%s/%v", KeyEndpoint, v)
+	err := c.delete(u)
 	if err != nil {
 		return err
 	}
