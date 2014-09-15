@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+        "reflect"
 )
 
 var (
@@ -40,6 +41,18 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
         err := json.NewEncoder(w).Encode(v)
         if err != nil {
                 panic("writeJSON: " + err.Error())
+        }
+}
+
+func assertEqual(t *testing.T, v1 interface{}, v2 interface{}) {
+        if !reflect.DeepEqual(v1, v2) {
+                t.Errorf("Expected %v, got %v", v1, v2)
+        }
+}
+
+func assertNotEqual(t *testing.T, v1 interface{}, v2 interface{}) {
+        if reflect.DeepEqual(v1, v2) {
+                t.Errorf("Expected %v, got %v", v1, v2)
         }
 }
 

@@ -4,7 +4,6 @@ import (
         "testing"
         "net/http"
         "fmt"
-        "reflect"
 )
 
 func Test_ListSizes(t *testing.T) {
@@ -44,30 +43,14 @@ func Test_ListSizes(t *testing.T) {
         }
 
 
-        if !reflect.DeepEqual(want[0].Slug, sizes[0].Slug) {
-                t.Errorf("Expected %v, got %v", want[0].Slug, sizes[0].Slug)
-        }
-        if !reflect.DeepEqual(want[0].Disk, sizes[0].Disk) {
-                t.Errorf("Expected %v, got %v", want[0].Disk, sizes[0].Disk)
-        }
-        if !reflect.DeepEqual(want[0].PriceHourly, sizes[0].PriceHourly) {
-                t.Errorf("Expected %v, got %v", want[0].PriceHourly, sizes[0].PriceHourly)
-        }
-        if !reflect.DeepEqual(want[0].Regions, sizes[0].Regions) {
-                t.Errorf("Expected %v, got %v", want[0].Regions, sizes[0].Regions)
-        }
-        if !reflect.DeepEqual(want[1].Slug, sizes[1].Slug) {
-                t.Errorf("Expected %v, got %v", want[1].Slug, sizes[1].Slug)
-        }
-        if !reflect.DeepEqual(want[1].Disk, sizes[1].Disk) {
-                t.Errorf("Expected %v, got %v", want[1].Disk, sizes[1].Disk)
-        }
-        if !reflect.DeepEqual(want[1].PriceHourly, sizes[1].PriceHourly) {
-                t.Errorf("Expected %v, got %v", want[1].PriceHourly, sizes[1].PriceHourly)
-        }
-        if !reflect.DeepEqual(want[1].Regions, sizes[1].Regions) {
-                t.Errorf("Expected %v, got %v", want[1].Regions, sizes[1].Regions)
-        }
+        assertEqual(t, want[0].Slug, sizes[0].Slug)
+        assertEqual(t, want[0].Disk, sizes[0].Disk)
+        assertEqual(t, want[0].PriceHourly, sizes[0].PriceHourly)
+        assertEqual(t, want[0].Regions, sizes[0].Regions)
+        assertEqual(t, want[1].Slug, sizes[1].Slug)
+        assertEqual(t, want[1].Disk, sizes[1].Disk)
+        assertEqual(t, want[1].PriceHourly, sizes[1].PriceHourly)
+        assertEqual(t, want[1].Regions, sizes[1].Regions)
 }
 
 var listSizesExample = `{ 
