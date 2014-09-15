@@ -42,15 +42,15 @@ func Test_ListSizes(t *testing.T) {
                 t.Errorf("Error retrieving sizes: %s", err)
         }
 
-
-        assertEqual(t, want[0].Slug, sizes[0].Slug)
-        assertEqual(t, want[0].Disk, sizes[0].Disk)
-        assertEqual(t, want[0].PriceHourly, sizes[0].PriceHourly)
-        assertEqual(t, want[0].Regions, sizes[0].Regions)
-        assertEqual(t, want[1].Slug, sizes[1].Slug)
-        assertEqual(t, want[1].Disk, sizes[1].Disk)
-        assertEqual(t, want[1].PriceHourly, sizes[1].PriceHourly)
-        assertEqual(t, want[1].Regions, sizes[1].Regions)
+        assertEqual(t, len(sizes), 2)
+        assertEqual(t, sizes[0].Slug, want[0].Slug)
+        assertEqual(t, sizes[0].Disk, want[0].Disk)
+        assertEqual(t, sizes[0].PriceHourly, want[0].PriceHourly)
+        assertEqual(t, sizes[0].Regions, want[0].Regions)
+        assertEqual(t, sizes[1].Slug, want[1].Slug)
+        assertEqual(t, sizes[1].Disk, want[1].Disk)
+        assertEqual(t, sizes[1].PriceHourly, want[1].PriceHourly)
+        assertEqual(t, sizes[1].Regions, want[1].Regions)
 }
 
 var listSizesExample = `{ 

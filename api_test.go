@@ -44,13 +44,13 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
         }
 }
 
-func assertEqual(t *testing.T, want interface{}, got interface{}) {
+func assertEqual(t *testing.T, got interface{}, want interface{}) {
         if !reflect.DeepEqual(want, got) {
                 t.Errorf("Expected %v, got %v", want, got)
         }
 }
 
-func assertNotEqual(t *testing.T, want interface{}, got interface{}) {
+func assertNotEqual(t *testing.T, got interface{}, want interface{}) {
         if reflect.DeepEqual(want, got) {
                 t.Errorf("Expected %v, got %v", want, got)
         }
