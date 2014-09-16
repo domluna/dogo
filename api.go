@@ -14,8 +14,11 @@ type Params map[string]interface{}
 
 // Client is a client to the DigitalOcean API service
 type Client struct {
+	// DO Access Token
 	Token string
-	URL   string
+
+	// Base DO API URL
+	URL string
 }
 
 // NewClient creates a new Client.
@@ -109,11 +112,38 @@ func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", c.Token))
 	resp, err := cl.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error attemping request: %s", err)
 	}
 	err = decode(resp, v)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+// Decode parses the response.
+func decode(resp *http.Response, v interface{}) error {
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("Error reading response: %s", err)
+	}
+	// create error
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		apiErr := &APIError{
+			StatusCode: resp.StatusCode,
+		}
+		err := json.Unmarshal(body, apiErr)
+		if err != nil {
+			return fmt.Errorf("Error UnMarshaling JSON Response into error: %s", err)
+		}
+		return apiErr
+	}
+
+	if v != nil {
+		err := json.Unmarshal(body, &v)
+		if err != nil {
+			return fmt.Errorf("Error UnMarshaling JSON Response into struct: %s", err)
+		}
 	}
 	return nil
 }
@@ -140,33 +170,6 @@ func (c *Client) DoAction(endpoint string, id int, params Params) error {
 	err := c.post(u, params, nil)
 	if err != nil {
 		return err
-	}
-	return nil
-}
-
-// Decode parses the response.
-func decode(resp *http.Response, v interface{}) error {
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	// create error
-	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		apiErr := &APIError{
-			StatusCode: resp.StatusCode,
-		}
-		err := json.Unmarshal(body, apiErr)
-		if err != nil {
-			return err
-		}
-		return apiErr
-	}
-
-	if v != nil {
-		err := json.Unmarshal(body, &v)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

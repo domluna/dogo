@@ -27,8 +27,8 @@ type Domain struct {
 type Domains []*Domain
 
 type CreateDomainOpts struct {
-        Name string `json:"name"`
-        IPAddress string `json:"ip_address"`
+	Name      string `json:"name"`
+	IPAddress string `json:"ip_address"`
 }
 
 func (c *Client) ListDomains() (Domains, error) {

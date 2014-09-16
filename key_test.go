@@ -1,20 +1,20 @@
 package digitalocean
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"testing"
-        "net/http"
-        "encoding/json"
-        "fmt"
 )
 
 func Test_ListKeys(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-        mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, listKeysExample)
-        })
+	mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, listKeysExample)
+	})
 
 	want := &Key{
 		ID:          1,
@@ -43,10 +43,10 @@ func Test_GetKey_ByID(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-        mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, keyExample)
-        })
+	mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, keyExample)
+	})
 
 	key, err := client.GetKey(want.ID)
 	assertEqual(t, err, nil)
@@ -67,10 +67,10 @@ func Test_GetKey_ByFingerPrint(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-        mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, keyExample)
-        })
+	mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, keyExample)
+	})
 
 	key, err := client.GetKey(want.FingerPrint)
 	assertEqual(t, err, nil)
@@ -91,20 +91,20 @@ func Test_CreateKey(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-        opts := &CreateKeyOpts{
-                Name: want.Name,
-                PublicKey: want.PublicKey,
-        }
+	opts := &CreateKeyOpts{
+		Name:      want.Name,
+		PublicKey: want.PublicKey,
+	}
 
-        mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
-                v := new(CreateKeyOpts)
-                json.NewDecoder(r.Body).Decode(v)
+	mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
+		v := new(CreateKeyOpts)
+		json.NewDecoder(r.Body).Decode(v)
 
-                assertEqual(t, r.Method, "POST")
-                assertEqual(t, v, opts)
+		assertEqual(t, r.Method, "POST")
+		assertEqual(t, v, opts)
 
-                fmt.Fprint(w, keyExample)
-        })
+		fmt.Fprint(w, keyExample)
+	})
 
 	key, err := client.CreateKey(opts)
 	assertEqual(t, err, nil)
@@ -125,18 +125,18 @@ func Test_UpdateKey_ByID(t *testing.T) {
 		Name:        "New Name",
 	}
 
-        opts := &UpdateKeyOpts{
-                Name: "New Name",
-        }
+	opts := &UpdateKeyOpts{
+		Name: "New Name",
+	}
 
-        mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
-                v := new(UpdateKeyOpts)
-                json.NewDecoder(r.Body).Decode(v)
+	mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
+		v := new(UpdateKeyOpts)
+		json.NewDecoder(r.Body).Decode(v)
 
-                assertEqual(t, r.Method, "PUT")
-                assertEqual(t, v, opts)
-                fmt.Fprint(w, updateKeyExample)
-        })
+		assertEqual(t, r.Method, "PUT")
+		assertEqual(t, v, opts)
+		fmt.Fprint(w, updateKeyExample)
+	})
 
 	key, err := client.UpdateKey(want.ID, opts)
 	assertEqual(t, err, nil)
@@ -157,18 +157,18 @@ func Test_UpdateKey_ByFingerPrint(t *testing.T) {
 		Name:        "New Name",
 	}
 
-        opts := &UpdateKeyOpts{
-                Name: "New Name",
-        }
+	opts := &UpdateKeyOpts{
+		Name: "New Name",
+	}
 
-        mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
-                v := new(UpdateKeyOpts)
-                json.NewDecoder(r.Body).Decode(v)
+	mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
+		v := new(UpdateKeyOpts)
+		json.NewDecoder(r.Body).Decode(v)
 
-                assertEqual(t, r.Method, "PUT")
-                assertEqual(t, v, opts)
-                fmt.Fprint(w, updateKeyExample)
-        })
+		assertEqual(t, r.Method, "PUT")
+		assertEqual(t, v, opts)
+		fmt.Fprint(w, updateKeyExample)
+	})
 
 	key, err := client.UpdateKey(want.FingerPrint, opts)
 	assertEqual(t, err, nil)
@@ -182,13 +182,13 @@ func Test_DeleteKey_ByID(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-        id := 3
+	id := 3
 
 	mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
-                assertEqual(t, r.Method, "DELETE")
-                fmt.Fprint(w, "")
+		assertEqual(t, r.Method, "DELETE")
+		fmt.Fprint(w, "")
 
-        })
+	})
 
 	err := client.DeleteKey(id)
 	assertEqual(t, err, nil)
@@ -198,13 +198,13 @@ func Test_DeleteKey_ByFingerPrint(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-        fingerprint := "a1:b2:c3"
+	fingerprint := "a1:b2:c3"
 
 	mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
-                assertEqual(t, r.Method, "DELETE")
-                fmt.Fprint(w, "")
+		assertEqual(t, r.Method, "DELETE")
+		fmt.Fprint(w, "")
 
-        })
+	})
 
 	err := client.DeleteKey(fingerprint)
 	assertEqual(t, err, nil)

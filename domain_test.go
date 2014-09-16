@@ -1,10 +1,10 @@
 package digitalocean
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"testing"
-        "fmt"
-        "net/http"
-        "encoding/json"
 )
 
 func Test_ListDomains(t *testing.T) {
@@ -17,10 +17,10 @@ func Test_ListDomains(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-        mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, listDomainsExample)
-        })
+	mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, listDomainsExample)
+	})
 
 	domains, err := client.ListDomains()
 
@@ -41,10 +41,10 @@ func Test_GetDomain(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-        mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, domainExample)
-        })
+	mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, domainExample)
+	})
 
 	domain, err := client.GetDomain(want.Name)
 	assertEqual(t, err, nil)
@@ -63,18 +63,18 @@ func Test_CreateDomain(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-        opts := &CreateDomainOpts{
-                Name: "example.com",
-                IPAddress: "127.0.0.20",
-        }
+	opts := &CreateDomainOpts{
+		Name:      "example.com",
+		IPAddress: "127.0.0.20",
+	}
 
-        mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request){
-                v := new(CreateDomainOpts)
-                json.NewDecoder(r.Body).Decode(v)
-                assertEqual(t, r.Method, "POST")
-                assertEqual(t, v, opts)
-                fmt.Fprint(w, domainExample)
-        })
+	mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request) {
+		v := new(CreateDomainOpts)
+		json.NewDecoder(r.Body).Decode(v)
+		assertEqual(t, r.Method, "POST")
+		assertEqual(t, v, opts)
+		fmt.Fprint(w, domainExample)
+	})
 
 	domain, err := client.CreateDomain(opts)
 	assertEqual(t, err, nil)
@@ -88,10 +88,10 @@ func Test_DeleteDomain(t *testing.T) {
 	defer teardown()
 
 	name := "example.com"
-        mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "DELETE")
-                fmt.Fprint(w, "")
-        })
+	mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "DELETE")
+		fmt.Fprint(w, "")
+	})
 
 	err := client.DeleteDomain(name)
 	assertEqual(t, err, nil)

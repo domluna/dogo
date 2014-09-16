@@ -18,12 +18,12 @@ type Key struct {
 type Keys []*Key
 
 type CreateKeyOpts struct {
-        Name string `json:"name"`
-        PublicKey string `json:"public_key"`
+	Name      string `json:"name"`
+	PublicKey string `json:"public_key"`
 }
 
 type UpdateKeyOpts struct {
-        Name string `json:"name"`
+	Name string `json:"name"`
 }
 
 // ListKeys retrieves all the users current ssh keys.

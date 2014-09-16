@@ -46,7 +46,7 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 
 func assertEqual(t *testing.T, got interface{}, want interface{}) {
 	if !reflect.DeepEqual(want, got) {
-		t.Errorf("Expected %v, got %v", want, got)
+		t.Errorf("Expected %+v, got %+v", want, got)
 	}
 }
 
@@ -54,15 +54,6 @@ func assertNotEqual(t *testing.T, got interface{}, want interface{}) {
 	if reflect.DeepEqual(want, got) {
 		t.Errorf("Expected %v, got %v", want, got)
 	}
-}
-
-// utility to create a test server with sane defaults for faster testing
-func testServer(status int, output string) {
-	f := func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(status)
-		fmt.Fprintln(w, output)
-	}
-	mux.HandleFunc("/", f)
 }
 
 // Utility function for creating a Client.

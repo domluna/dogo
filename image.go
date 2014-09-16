@@ -2,7 +2,6 @@ package digitalocean
 
 import (
 	"fmt"
-	"time"
 )
 
 const ImageEndpoint = "images"
@@ -14,26 +13,43 @@ type Kernel struct {
 	Version string `json:"version,omitempty"`
 }
 
-// Snapshot is a DigitalOcean Snapshot/Backup.
+type Kernels []*Kernel
+
+// Snapshot is a DigitalOcean snapshot.
 type Snapshot struct {
-	ID        int      `json:"id,omitempty"`
-	Name      string   `json:"name,omitempty"`
-	Dist      string   `json:"distribution,omitempty"`
-	Slug      string   `json:"slug,omitempty,omitempty"`
-	Public    bool     `json:"public,omitempty"`
-	Regions   []string `json:"regions,omitempty"`
-	ActionIDs []int    `json:"action_ids,omitempty"`
+	ID           int      `json:"id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Distribution string   `json:"distribution,omitempty"`
+	Slug         string   `json:"slug,omitempty,omitempty"`
+	Public       bool     `json:"public,omitempty"`
+	Regions      []string `json:"regions,omitempty"`
+	ActionIDs    []int    `json:"action_ids,omitempty"`
 }
+
+type Snapshots []*Snapshot
+
+// Backup is a DigitalOcean backup.
+type Backup struct {
+	ID           int      `json:"id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Distribution string   `json:"distribution,omitempty"`
+	Slug         string   `json:"slug,omitempty,omitempty"`
+	Public       bool     `json:"public,omitempty"`
+	Regions      []string `json:"regions,omitempty"`
+	ActionIDs    []int    `json:"action_ids,omitempty"`
+}
+
+type Backups []*Backup
 
 // Representation for a DigitalOcean Image.
 type Image struct {
-	ID           int       `json:"id,omitempty"`
-	Name         string    `json:"name,omitempty"`
-	Distribution string    `json:"distribution,omitempty"`
-	Slug         string    `json:"slug,omitempty,omitempty"`
-	Public       bool      `json:"public,omitempty"`
-	Regions      []string  `json:"regions,omitempty"`
-	CreatedAt    time.Time `json:"created_at,omitempty"`
+	ID           int      `json:"id,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Distribution string   `json:"distribution,omitempty"`
+	Slug         string   `json:"slug,omitempty,omitempty"`
+	Public       bool     `json:"public,omitempty"`
+	Regions      []string `json:"regions,omitempty"`
+	CreatedAt    string   `json:"created_at,omitempty"`
 }
 
 // Images is a list of type Image.
