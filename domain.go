@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	DomainEndpoint = "/domains"
+	DomainEndpoint = "domains"
 )
 
 // Domain is a representation of a DigitalOcean domain.

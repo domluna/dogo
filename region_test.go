@@ -1,8 +1,6 @@
 package digitalocean
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 )
 
@@ -10,9 +8,7 @@ func Test_ListRegions(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	mux.HandleFunc("/regions", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintln(w, listRegionsExample)
-	})
+	mux.HandleFunc("/regions", testServer(200, listRegionsExample))
 
         want := &Region{
                 Slug: "ams1",

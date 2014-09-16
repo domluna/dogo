@@ -10,9 +10,7 @@ func Test_ListKeys(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, listKeysExample)
-	})
+	mux.HandleFunc("/account/keys", testServer(200, listKeysExample))
 
 	want := &Key{
 		ID:          1,
@@ -42,9 +40,7 @@ func Test_GetKey_ByID(t *testing.T) {
 	}
 
 	u := fmt.Sprintf("/account/keys/%d", want.ID)
-	mux.HandleFunc(u, func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintln(w, getKeyExample)
-	})
+	mux.HandleFunc(u, testServer(200, keyExample))
 
 	key, err := client.GetKey(want.ID)
 	assertEqual(t, err, nil)
@@ -66,9 +62,7 @@ func Test_GetKey_ByFingerPrint(t *testing.T) {
 	}
 
 	u := fmt.Sprintf("/account/keys/%s", want.FingerPrint)
-	mux.HandleFunc(u, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getKeyExample)
-	})
+	mux.HandleFunc(u, testServer(200, keyExample))
 
 	key, err := client.GetKey(want.FingerPrint)
 	assertEqual(t, err, nil)
@@ -89,9 +83,7 @@ func Test_CreateKey(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-	mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, createKeyExample)
-	})
+	mux.HandleFunc("/account/keys", testServer(200, keyExample))
 
 	key, err := client.CreateKey(want.Name, want.PublicKey)
 	assertEqual(t, err, nil)
@@ -113,9 +105,7 @@ func Test_UpdateKey_ByID(t *testing.T) {
 	}
 
 	u := fmt.Sprintf("/account/keys/%d", want.ID)
-	mux.HandleFunc(u, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, updateKeyExample)
-	})
+        mux.HandleFunc(u, testServer(202, updateKeyExample))
 
 	key, err := client.UpdateKey(want.ID, want.Name)
 	assertEqual(t, err, nil)
@@ -137,9 +127,7 @@ func Test_UpdateKey_ByFingerPrint(t *testing.T) {
 	}
 
 	u := fmt.Sprintf("/account/keys/%s", want.FingerPrint)
-	mux.HandleFunc(u, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, updateKeyExample)
-	})
+        mux.HandleFunc(u, testServer(202, updateKeyExample))
 
 	key, err := client.UpdateKey(want.FingerPrint, want.Name)
 	assertEqual(t, err, nil)
@@ -184,7 +172,7 @@ var listKeysExample = `{
 }
 `
 
-var getKeyExample = `{
+var keyExample = `{
   "ssh_key": {
     "id": 3,
     "fingerprint": "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
@@ -193,7 +181,6 @@ var getKeyExample = `{
   }
 }`
 
-var createKeyExample = getKeyExample
 var updateKeyExample = `{
   "ssh_key": {
     "id": 3,
