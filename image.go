@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// ImageEndpoint is the DigitalOcean endpoint for interacting with images.
 const ImageEndpoint = "images"
 
 // Kernel is a DigitalOcean Kernel.
@@ -52,10 +53,9 @@ type Image struct {
 	CreatedAt    string   `json:"created_at,omitempty"`
 }
 
-// Images is a list of type Image.
 type Images []*Image
 
-// GetMyImages gets all custom images/snapshots.
+// ListImages retrieves all images on your account.
 func (c *Client) ListImages() (Images, error) {
 	s := struct {
 		Images `json:"images,omitempty"`
@@ -67,11 +67,11 @@ func (c *Client) ListImages() (Images, error) {
 	return s.Images, nil
 }
 
-// GetMyImages gets all custom images/snapshots.
+// GetImage retrieves an image by its id or slug.
 func (c *Client) GetImage(v interface{}) (Image, error) {
 	u := fmt.Sprintf("%s/%v", ImageEndpoint, v)
 	s := struct {
-		Image `json:"images,omitempty"`
+		Image `json:"image,omitempty"`
 	}{}
 	err := c.get(u, &s)
 	if err != nil {
@@ -80,8 +80,8 @@ func (c *Client) GetImage(v interface{}) (Image, error) {
 	return s.Image, nil
 }
 
-// GetMyImages gets all custom images/snapshots.
-func (c *Client) Delete(id int) error {
+// DeleteImage deletes an image given its id.
+func (c *Client) DeleteImage(id int) error {
 	u := fmt.Sprintf("%s/%d", ImageEndpoint, id)
 	err := c.delete(u)
 	if err != nil {
@@ -90,8 +90,8 @@ func (c *Client) Delete(id int) error {
 	return nil
 }
 
-// GetMyImages gets all custom images/snapshots.
-func (c *Client) Update(id int, name string) (Image, error) {
+// UpdateImage updates the image's name given its id.
+func (c *Client) UpdateImage(id int, name string) (Image, error) {
 	u := fmt.Sprintf("%s/%d", ImageEndpoint, id)
 	s := struct {
 		Image `json:"image,omitempty"`
