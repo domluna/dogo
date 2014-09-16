@@ -39,7 +39,10 @@ func (c *Client) get(endpoint string, v interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	req.Header.Set("Content-Type", "application/json")
 	err = c.DoRequest(req, v)
+
 	if err != nil {
 		return err
 	}
@@ -52,26 +55,9 @@ func (c *Client) delete(endpoint string) error {
 	if err != nil {
 		return err
 	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	err = c.DoRequest(req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Client) put(endpoint string, params Params, v interface{}) error {
-	endpoint = fmt.Sprintf("%s/%s", c.URL, endpoint)
-	payload, err := json.Marshal(params)
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest("PUT", endpoint, bytes.NewReader(payload))
-	if err != nil {
-		return err
-	}
-
-	c.DoRequest(req, v)
 	if err != nil {
 		return err
 	}
@@ -89,6 +75,27 @@ func (c *Client) post(endpoint string, params Params, v interface{}) error {
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Content-Type", "application/json")
+
+	c.DoRequest(req, v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) put(endpoint string, params Params, v interface{}) error {
+	endpoint = fmt.Sprintf("%s/%s", c.URL, endpoint)
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", endpoint, bytes.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	c.DoRequest(req, v)
 	if err != nil {
@@ -99,7 +106,6 @@ func (c *Client) post(endpoint string, params Params, v interface{}) error {
 
 func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	cl := &http.Client{}
-	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", c.Token))
 	resp, err := cl.Do(req)
 	if err != nil {
