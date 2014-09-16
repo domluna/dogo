@@ -2,13 +2,19 @@ package digitalocean
 
 import (
 	"testing"
+        "net/http"
+        "encoding/json"
+        "fmt"
 )
 
 func Test_ListKeys(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	testServer(200, listKeysExample)
+        mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, listKeysExample)
+        })
 
 	want := &Key{
 		ID:          1,
@@ -32,12 +38,15 @@ func Test_GetKey_ByID(t *testing.T) {
 
 	want := &Key{
 		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+		FingerPrint: "a1:b2:c3",
 		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
 		Name:        "Example Key",
 	}
 
-	testServer(200, keyExample)
+        mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, keyExample)
+        })
 
 	key, err := client.GetKey(want.ID)
 	assertEqual(t, err, nil)
@@ -53,12 +62,15 @@ func Test_GetKey_ByFingerPrint(t *testing.T) {
 
 	want := &Key{
 		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+		FingerPrint: "a1:b2:c3",
 		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
 		Name:        "Example Key",
 	}
 
-	testServer(200, keyExample)
+        mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, keyExample)
+        })
 
 	key, err := client.GetKey(want.FingerPrint)
 	assertEqual(t, err, nil)
@@ -74,14 +86,27 @@ func Test_CreateKey(t *testing.T) {
 
 	want := &Key{
 		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+		FingerPrint: "a1:b2:c3",
 		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
 		Name:        "Example Key",
 	}
 
-	testServer(200, keyExample)
+        opts := &CreateKeyOpts{
+                Name: want.Name,
+                PublicKey: want.PublicKey,
+        }
 
-	key, err := client.CreateKey(want.Name, want.PublicKey)
+        mux.HandleFunc("/account/keys", func(w http.ResponseWriter, r *http.Request) {
+                v := new(CreateKeyOpts)
+                json.NewDecoder(r.Body).Decode(v)
+
+                assertEqual(t, r.Method, "POST")
+                assertEqual(t, v, opts)
+
+                fmt.Fprint(w, keyExample)
+        })
+
+	key, err := client.CreateKey(opts)
 	assertEqual(t, err, nil)
 	assertEqual(t, key.ID, want.ID)
 	assertEqual(t, key.FingerPrint, want.FingerPrint)
@@ -95,14 +120,25 @@ func Test_UpdateKey_ByID(t *testing.T) {
 
 	want := &Key{
 		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+		FingerPrint: "a1:b2:c3",
 		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
 		Name:        "New Name",
 	}
 
-	testServer(202, updateKeyExample)
+        opts := &UpdateKeyOpts{
+                Name: "New Name",
+        }
 
-	key, err := client.UpdateKey(want.ID, want.Name)
+        mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
+                v := new(UpdateKeyOpts)
+                json.NewDecoder(r.Body).Decode(v)
+
+                assertEqual(t, r.Method, "PUT")
+                assertEqual(t, v, opts)
+                fmt.Fprint(w, updateKeyExample)
+        })
+
+	key, err := client.UpdateKey(want.ID, opts)
 	assertEqual(t, err, nil)
 	assertEqual(t, key.ID, want.ID)
 	assertEqual(t, key.FingerPrint, want.FingerPrint)
@@ -116,14 +152,25 @@ func Test_UpdateKey_ByFingerPrint(t *testing.T) {
 
 	want := &Key{
 		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+		FingerPrint: "a1:b2:c3",
 		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
 		Name:        "New Name",
 	}
 
-	testServer(202, updateKeyExample)
+        opts := &UpdateKeyOpts{
+                Name: "New Name",
+        }
 
-	key, err := client.UpdateKey(want.FingerPrint, want.Name)
+        mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
+                v := new(UpdateKeyOpts)
+                json.NewDecoder(r.Body).Decode(v)
+
+                assertEqual(t, r.Method, "PUT")
+                assertEqual(t, v, opts)
+                fmt.Fprint(w, updateKeyExample)
+        })
+
+	key, err := client.UpdateKey(want.FingerPrint, opts)
 	assertEqual(t, err, nil)
 	assertEqual(t, key.ID, want.ID)
 	assertEqual(t, key.FingerPrint, want.FingerPrint)
@@ -131,20 +178,35 @@ func Test_UpdateKey_ByFingerPrint(t *testing.T) {
 	assertEqual(t, key.Name, want.Name)
 }
 
-func Test_DeleteKey(t *testing.T) {
+func Test_DeleteKey_ByID(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	want := &Key{
-		ID:          3,
-		FingerPrint: "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
-		PublicKey:   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
-		Name:        "New Name",
-	}
+        id := 3
 
-	testServer(204, "")
+	mux.HandleFunc("/account/keys/3", func(w http.ResponseWriter, r *http.Request) {
+                assertEqual(t, r.Method, "DELETE")
+                fmt.Fprint(w, "")
 
-	err := client.DeleteKey(want.ID)
+        })
+
+	err := client.DeleteKey(id)
+	assertEqual(t, err, nil)
+}
+
+func Test_DeleteKey_ByFingerPrint(t *testing.T) {
+	setup(t)
+	defer teardown()
+
+        fingerprint := "a1:b2:c3"
+
+	mux.HandleFunc("/account/keys/a1:b2:c3", func(w http.ResponseWriter, r *http.Request) {
+                assertEqual(t, r.Method, "DELETE")
+                fmt.Fprint(w, "")
+
+        })
+
+	err := client.DeleteKey(fingerprint)
 	assertEqual(t, err, nil)
 }
 
@@ -166,7 +228,7 @@ var listKeysExample = `{
 var keyExample = `{
   "ssh_key": {
     "id": 3,
-    "fingerprint": "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+    "fingerprint": "a1:b2:c3",
     "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
     "name": "Example Key"
   }
@@ -175,7 +237,7 @@ var keyExample = `{
 var updateKeyExample = `{
   "ssh_key": {
     "id": 3,
-    "fingerprint": "70:8a:81:98:9c:60:d9:d2:d4:82:c7:97:bf:95:4f:09",
+    "fingerprint": "a1:b2:c3",
     "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAQQDmfd/h4HxEHKQd6nsHYYYkn0mrfNE3QsxrLUD3vYnwb6dZIU6bNxPH4OHQ1lhevyUsw0WK4xi7dtNkJsb9lhtZ example",
     "name": "New Name"
   }

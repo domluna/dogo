@@ -2,6 +2,9 @@ package digitalocean
 
 import (
 	"testing"
+        "fmt"
+        "net/http"
+        "encoding/json"
 )
 
 func Test_ListDomains(t *testing.T) {
@@ -14,7 +17,10 @@ func Test_ListDomains(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-	testServer(200, listDomainsExample)
+        mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request){
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, listDomainsExample)
+        })
 
 	domains, err := client.ListDomains()
 
@@ -35,7 +41,10 @@ func Test_GetDomain(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-	testServer(200, domainExample)
+        mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request){
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, domainExample)
+        })
 
 	domain, err := client.GetDomain(want.Name)
 	assertEqual(t, err, nil)
@@ -54,9 +63,20 @@ func Test_CreateDomain(t *testing.T) {
 		ZoneFile: "Example zone file text...",
 	}
 
-	testServer(202, domainExample)
+        opts := &CreateDomainOpts{
+                Name: "example.com",
+                IPAddress: "127.0.0.20",
+        }
 
-	domain, err := client.CreateDomain(want.Name, "127.0.0.20")
+        mux.HandleFunc("/domains", func(w http.ResponseWriter, r *http.Request){
+                v := new(CreateDomainOpts)
+                json.NewDecoder(r.Body).Decode(v)
+                assertEqual(t, r.Method, "POST")
+                assertEqual(t, v, opts)
+                fmt.Fprint(w, domainExample)
+        })
+
+	domain, err := client.CreateDomain(opts)
 	assertEqual(t, err, nil)
 	assertEqual(t, domain.Name, want.Name)
 	assertEqual(t, domain.TTL, want.TTL)
@@ -68,7 +88,10 @@ func Test_DeleteDomain(t *testing.T) {
 	defer teardown()
 
 	name := "example.com"
-	testServer(204, "")
+        mux.HandleFunc("/domains/example.com", func(w http.ResponseWriter, r *http.Request){
+                assertEqual(t, r.Method, "DELETE")
+                fmt.Fprint(w, "")
+        })
 
 	err := client.DeleteDomain(name)
 	assertEqual(t, err, nil)

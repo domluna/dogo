@@ -26,6 +26,11 @@ type Domain struct {
 // Domains is a list of Domain.
 type Domains []*Domain
 
+type CreateDomainOpts struct {
+        Name string `json:"name"`
+        IPAddress string `json:"ip_address"`
+}
+
 func (c *Client) ListDomains() (Domains, error) {
 	s := struct {
 		Domains `json:"domains,omitempty"`
@@ -49,15 +54,11 @@ func (c *Client) GetDomain(name string) (*Domain, error) {
 	return &s.Domain, nil
 }
 
-func (c *Client) CreateDomain(name string, ip string) (*Domain, error) {
+func (c *Client) CreateDomain(opts *CreateDomainOpts) (*Domain, error) {
 	s := struct {
 		Domain `json:"domain,omitempty"`
 	}{}
-	payload := Params{
-		"name":       name,
-		"ip_address": ip,
-	}
-	err := c.post(DomainEndpoint, payload, &s)
+	err := c.post(DomainEndpoint, opts, &s)
 	if err != nil {
 		return nil, err
 	}

@@ -2,13 +2,18 @@ package digitalocean
 
 import (
 	"testing"
+        "fmt"
+        "net/http"
 )
 
 func Test_ListSizes(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	testServer(200, listSizesExample)
+        mux.HandleFunc("/sizes", func(w http.ResponseWriter, r *http.Request){
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, listSizesExample)
+        })
 
 	want := Sizes{
 		&Size{

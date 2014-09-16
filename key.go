@@ -17,6 +17,15 @@ type Key struct {
 // Keys is a list of Key.
 type Keys []*Key
 
+type CreateKeyOpts struct {
+        Name string `json:"name"`
+        PublicKey string `json:"public_key"`
+}
+
+type UpdateKeyOpts struct {
+        Name string `json:"name"`
+}
+
 // ListKeys retrieves all the users current ssh keys.
 func (c *Client) ListKeys() (Keys, error) {
 	s := struct {
@@ -43,15 +52,11 @@ func (c *Client) GetKey(v interface{}) (*Key, error) {
 }
 
 // CreateKey adds an ssh key to the user account.
-func (c *Client) CreateKey(name string, publicKey string) (*Key, error) {
+func (c *Client) CreateKey(opts *CreateKeyOpts) (*Key, error) {
 	s := struct {
 		Key `json:"ssh_key,omitempty"`
 	}{}
-	payload := Params{
-		"name":       name,
-		"public_key": publicKey,
-	}
-	err := c.post(KeyEndpoint, payload, &s)
+	err := c.post(KeyEndpoint, opts, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -59,15 +64,12 @@ func (c *Client) CreateKey(name string, publicKey string) (*Key, error) {
 }
 
 // UpdateKey updates an SSH Key. Can use the ID or FINGERPRINT of the key.
-func (c *Client) UpdateKey(v interface{}, name string) (*Key, error) {
+func (c *Client) UpdateKey(v interface{}, opts *UpdateKeyOpts) (*Key, error) {
 	u := fmt.Sprintf("%s/%v", KeyEndpoint, v)
 	s := struct {
 		Key `json:"ssh_key,omitempty"`
 	}{}
-	payload := Params{
-		"name": name,
-	}
-	err := c.put(u, payload, &s)
+	err := c.put(u, opts, &s)
 	if err != nil {
 		return nil, err
 	}

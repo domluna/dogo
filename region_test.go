@@ -2,13 +2,18 @@ package digitalocean
 
 import (
 	"testing"
+        "net/http"
+        "fmt"
 )
 
 func Test_ListRegions(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	testServer(200, listRegionsExample)
+        mux.HandleFunc("/regions", func(w http.ResponseWriter, r *http.Request){
+                assertEqual(t, r.Method, "GET")
+                fmt.Fprint(w, listRegionsExample)
+        })
 
 	want := &Region{
 		Slug: "ams1",
@@ -25,6 +30,7 @@ func Test_ListRegions(t *testing.T) {
 	}
 	regions, err := client.ListRegions()
 	assertEqual(t, err, nil)
+	assertEqual(t, len(regions), 3)
 	assertEqual(t, regions[2].Slug, want.Slug)
 	assertEqual(t, regions[2].Name, want.Name)
 	assertEqual(t, regions[2].Sizes, want.Sizes)

@@ -9,6 +9,25 @@ const (
 	DropletEndpoint = "droplets"
 )
 
+type Networks struct {
+	V4 []V4 `json:"v4,omitempty"`
+	V6 []V6 `json:"v6,omitempty"`
+}
+
+type V4 struct {
+	IP      string `json:"ip_address,omitempty"`
+	Netmask string `json:"netmask,omitempty"`
+	Gateway string `json:"gateway,omitempty"`
+	Type    string `json:"type,omitempty"`
+}
+
+type V6 struct {
+	IP      string `json:"ip_address,omitempty"`
+	Netmask string `json:"netmask,omitempty"`
+	Gateway string `json:"gateway,omitempty"`
+	Type    string `json:"type,omitempty"`
+}
+
 // Droplet respresents a DigitalOcean droplet.
 type Droplet struct {
 	ID          int       `json:"id,omitempty"`
@@ -29,6 +48,7 @@ type Droplet struct {
 	ActionIDs   []int     `json:"action_ids,omitempty"`
 	Features    []string  `json:"features,omitempty"`
 }
+
 
 // IPV4 returns the ipv4 address of the droplet.
 func (d *Droplet) IPV4() string {
@@ -63,6 +83,27 @@ func (d *Droplet) ImageID() int {
 
 type Droplets []Droplet
 
+// CreateDroplet is a utility object used when
+// creating a droplet.
+//
+// Name, Region, Size and Image are required.
+type CreateDropletOpts struct {
+        Name string `json:"name"`
+        Region string `json:"region"`
+        Size string `json:"size"`
+
+        // Image can either be an id or a slug.
+        Image interface{} `json:"image"`
+
+        // The key can be either an id or a fingerprint
+        Keys []interface{} `json:"ssh_keys"`
+
+        Backups bool `json:"backups"`
+        IPV6 bool `json:"ipv6"`
+        PrivateNetworking bool `json:"private_networking"`
+        UserData string `json:"user_data"`
+}
+
 // GetDroplets returns all users droplets, active or otherwise.
 func (c *Client) ListDroplets() (Droplets, error) {
 	s := struct {
@@ -90,11 +131,11 @@ func (c *Client) GetDroplet(id int) (*Droplet, error) {
 }
 
 // CreateDroplet creates a droplet based on based specs.
-func (c *Client) CreateDroplet(params Params) (*Droplet, error) {
+func (c *Client) CreateDroplet(opts CreateDropletOpts) (*Droplet, error) {
 	s := struct {
 		Droplet `json:"droplet,omitempty"`
 	}{}
-	err := c.post(DropletEndpoint, params, &s)
+	err := c.post(DropletEndpoint, opts, &s)
 	if err != nil {
 		return nil, err
 	}
@@ -112,41 +153,3 @@ func (c *Client) DestroyDroplet(id int) error {
 	return nil
 }
 
-func (c *Client) ResizeDroplet(id int, size string) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "resize",
-		"size": size,
-	})
-}
-
-func (c *Client) RenameDroplet(id int, name string) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "resize",
-		"name": name,
-	})
-}
-
-func (c *Client) EnableIPV6(id int, size string) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "enable_ipv6",
-	})
-
-}
-
-func (c *Client) EnablePrivateNetworking(id int) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "enable_private_networking",
-	})
-}
-
-func (c *Client) PowerOffDroplet(id int) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "power_off",
-	})
-}
-
-func (c *Client) PowerOnDroplet(id int) error {
-	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "power_on",
-	})
-}

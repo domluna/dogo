@@ -64,9 +64,9 @@ func (c *Client) delete(endpoint string) error {
 	return nil
 }
 
-func (c *Client) post(endpoint string, params Params, v interface{}) error {
+func (c *Client) post(endpoint string, opts interface{}, v interface{}) error {
 	endpoint = fmt.Sprintf("%s/%s", c.URL, endpoint)
-	payload, err := json.Marshal(params)
+	payload, err := json.Marshal(opts)
 	if err != nil {
 		return err
 	}
@@ -84,9 +84,9 @@ func (c *Client) post(endpoint string, params Params, v interface{}) error {
 	return nil
 }
 
-func (c *Client) put(endpoint string, params Params, v interface{}) error {
+func (c *Client) put(endpoint string, opts interface{}, v interface{}) error {
 	endpoint = fmt.Sprintf("%s/%s", c.URL, endpoint)
-	payload, err := json.Marshal(params)
+	payload, err := json.Marshal(opts)
 	if err != nil {
 		return err
 	}
