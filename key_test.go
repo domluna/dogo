@@ -1,8 +1,6 @@
 package digitalocean
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 )
 
@@ -10,7 +8,7 @@ func Test_ListKeys(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	mux.HandleFunc("/account/keys", testServer(200, listKeysExample))
+	testServer(200, listKeysExample)
 
 	want := &Key{
 		ID:          1,
@@ -39,8 +37,7 @@ func Test_GetKey_ByID(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-	u := fmt.Sprintf("/account/keys/%d", want.ID)
-	mux.HandleFunc(u, testServer(200, keyExample))
+	testServer(200, keyExample)
 
 	key, err := client.GetKey(want.ID)
 	assertEqual(t, err, nil)
@@ -61,8 +58,7 @@ func Test_GetKey_ByFingerPrint(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-	u := fmt.Sprintf("/account/keys/%s", want.FingerPrint)
-	mux.HandleFunc(u, testServer(200, keyExample))
+	testServer(200, keyExample)
 
 	key, err := client.GetKey(want.FingerPrint)
 	assertEqual(t, err, nil)
@@ -83,7 +79,7 @@ func Test_CreateKey(t *testing.T) {
 		Name:        "Example Key",
 	}
 
-	mux.HandleFunc("/account/keys", testServer(200, keyExample))
+	testServer(200, keyExample)
 
 	key, err := client.CreateKey(want.Name, want.PublicKey)
 	assertEqual(t, err, nil)
@@ -104,8 +100,7 @@ func Test_UpdateKey_ByID(t *testing.T) {
 		Name:        "New Name",
 	}
 
-	u := fmt.Sprintf("/account/keys/%d", want.ID)
-        mux.HandleFunc(u, testServer(202, updateKeyExample))
+	testServer(202, updateKeyExample)
 
 	key, err := client.UpdateKey(want.ID, want.Name)
 	assertEqual(t, err, nil)
@@ -126,8 +121,7 @@ func Test_UpdateKey_ByFingerPrint(t *testing.T) {
 		Name:        "New Name",
 	}
 
-	u := fmt.Sprintf("/account/keys/%s", want.FingerPrint)
-        mux.HandleFunc(u, testServer(202, updateKeyExample))
+	testServer(202, updateKeyExample)
 
 	key, err := client.UpdateKey(want.FingerPrint, want.Name)
 	assertEqual(t, err, nil)
@@ -148,10 +142,7 @@ func Test_DeleteKey(t *testing.T) {
 		Name:        "New Name",
 	}
 
-	u := fmt.Sprintf("/account/keys/%d", want.ID)
-	mux.HandleFunc(u, func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(204)
-	})
+	testServer(204, "")
 
 	err := client.DeleteKey(want.ID)
 	assertEqual(t, err, nil)

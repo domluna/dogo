@@ -8,7 +8,7 @@ func Test_ListSizes(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-        mux.HandleFunc("/sizes", testServer(200, listSizesExample))
+	testServer(200, listSizesExample)
 
 	want := Sizes{
 		&Size{

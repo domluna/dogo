@@ -58,11 +58,11 @@ func assertNotEqual(t *testing.T, got interface{}, want interface{}) {
 
 // utility to create a test server with sane defaults for faster testing
 func testServer(status int, output string) {
-        f := func(w http.ResponseWriter, req *http.Request) {
-                w.WriteHeader(status)
-                fmt.Fprintln(w, output)
-        }
-        mux.HandleFunc("/", f)
+	f := func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(status)
+		fmt.Fprintln(w, output)
+	}
+	mux.HandleFunc("/", f)
 }
 
 // Utility function for creating a Client.
