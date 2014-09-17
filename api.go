@@ -109,7 +109,7 @@ func (c *Client) put(endpoint string, opts interface{}, v interface{}) error {
 
 func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	cl := &http.Client{}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", c.Token))
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 	resp, err := cl.Do(req)
 	if err != nil {
 		return fmt.Errorf("Error attemping request: %s", err)
