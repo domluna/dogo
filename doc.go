@@ -19,24 +19,24 @@ If you export the token as follows:
 
 For example using the droplet client will go as follows:
 
-        package main
+package main
 
-	import (
-		"github.com/domluna/dogo"
-	)
+import (
+	"github.com/domluna/dogo"
+)
 
-	func main() {
+func main() {
 
-                // If the token is the empty string("") then it'll attempt
-                // to fill the value under env var $DIGITALOCEAN_TOKEN
-		client := dogo.NewClient("") // $DIGITALOCEAN_TOKEN
+        // If the token is the empty string("") then it'll attempt
+        // to fill the value under env var $DIGITALOCEAN_TOKEN
+	client := dogo.NewClient("") // $DIGITALOCEAN_TOKEN
 
-		// get all droplets
-		droplets, err := client.ListDroplets()
-		if err != nil {
-			// deal with error
-		}
-		// do stuff with droplets
+	// get all droplets
+	droplets, err := client.ListDroplets()
+	if err != nil {
+		// deal with error
 	}
+	// do stuff with droplets
+}
 */
 package dogo
