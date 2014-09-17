@@ -19,6 +19,8 @@ If you export the token as follows:
 
 For example using the droplet client will go as follows:
 
+        package main
+
 	import (
 		"github.com/domluna/dogo"
 	)
