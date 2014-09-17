@@ -30,8 +30,8 @@ import (
 
 func main() {
 
-        // If the token is the empty string("") then it'll attempt
-        // to fill the value under env var $DIGITALOCEAN_TOKEN
+  // If the token is the empty string("") then it'll attempt
+  // to fill the value under env var $DIGITALOCEAN_TOKEN
 	client := dogo.NewClient("") // $DIGITALOCEAN_TOKEN
 
 	// get all droplets
