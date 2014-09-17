@@ -55,6 +55,10 @@ type Image struct {
 
 type Images []*Image
 
+type UpdateImageOpts struct{
+        Name string `json:"name"`
+}
+
 // ListImages retrieves all images on your account.
 func (c *Client) ListImages() (Images, error) {
 	s := struct {
@@ -68,16 +72,16 @@ func (c *Client) ListImages() (Images, error) {
 }
 
 // GetImage retrieves an image by its id or slug.
-func (c *Client) GetImage(v interface{}) (Image, error) {
+func (c *Client) GetImage(v interface{}) (*Image, error) {
 	u := fmt.Sprintf("%s/%v", ImageEndpoint, v)
 	s := struct {
 		Image `json:"image,omitempty"`
 	}{}
 	err := c.get(u, &s)
 	if err != nil {
-		return s.Image, err
+		return nil, err
 	}
-	return s.Image, nil
+	return &s.Image, nil
 }
 
 // DeleteImage deletes an image given its id.
@@ -91,7 +95,7 @@ func (c *Client) DeleteImage(id int) error {
 }
 
 // UpdateImage updates the image's name given its id.
-func (c *Client) UpdateImage(id int, name string) (Image, error) {
+func (c *Client) UpdateImage(id int, name string) (*Image, error) {
 	u := fmt.Sprintf("%s/%d", ImageEndpoint, id)
 	s := struct {
 		Image `json:"image,omitempty"`
@@ -101,7 +105,7 @@ func (c *Client) UpdateImage(id int, name string) (Image, error) {
 	}
 	err := c.put(u, payload, &s)
 	if err != nil {
-		return s.Image, err
+		return nil, err
 	}
-	return s.Image, nil
+	return &s.Image, nil
 }

@@ -166,7 +166,7 @@ func decode(resp *http.Response, v interface{}) error {
 //
 // Params will sometimes only require the type of action and no additional params.
 func (c *Client) DoAction(endpoint string, id int, params Params) error {
-	u := fmt.Sprintf("%s/%d", endpoint, id)
+	u := fmt.Sprintf("%s/%d/actions", endpoint, id)
 	err := c.post(u, params, nil)
 	if err != nil {
 		return err

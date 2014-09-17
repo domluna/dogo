@@ -10,16 +10,15 @@ func Test_ListSizes(t *testing.T) {
 	setup(t)
 	defer teardown()
 
-	mux.HandleFunc("/sizes", func(w http.ResponseWriter, r *http.Request) {
-		assertEqual(t, r.Method, "GET")
-		fmt.Fprint(w, listSizesExample)
-	})
-
 	want := Sizes{
 		&Size{
 			Slug:        "512mb",
 			Disk:        20,
+                        Memory: 512,
+                        VCPUS: 1,
+                        Transfer: 1,
 			PriceHourly: 0.00744,
+                        PriceMonthly: 5.0,
 			Regions: []string{
 				"nyc1",
 				"sfo1",
@@ -29,7 +28,11 @@ func Test_ListSizes(t *testing.T) {
 		&Size{
 			Slug:        "1gb",
 			Disk:        30,
+                        Memory: 1024,
+                        VCPUS: 2,
+                        Transfer: 2,
 			PriceHourly: 0.01488,
+                        PriceMonthly: 10.0,
 			Regions: []string{
 				"nyc1",
 				"sfo1",
@@ -38,18 +41,17 @@ func Test_ListSizes(t *testing.T) {
 		},
 	}
 
+	mux.HandleFunc("/sizes", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, listSizesExample)
+	})
+
+
 	sizes, err := client.ListSizes()
 
 	assertEqual(t, err, nil)
 	assertEqual(t, len(sizes), 2)
-	assertEqual(t, sizes[0].Slug, want[0].Slug)
-	assertEqual(t, sizes[0].Disk, want[0].Disk)
-	assertEqual(t, sizes[0].PriceHourly, want[0].PriceHourly)
-	assertEqual(t, sizes[0].Regions, want[0].Regions)
-	assertEqual(t, sizes[1].Slug, want[1].Slug)
-	assertEqual(t, sizes[1].Disk, want[1].Disk)
-	assertEqual(t, sizes[1].PriceHourly, want[1].PriceHourly)
-	assertEqual(t, sizes[1].Regions, want[1].Regions)
+        assertEqual(t, sizes, want)
 }
 
 var listSizesExample = `{ 
