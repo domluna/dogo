@@ -7,7 +7,7 @@ install:
 - go get github.com/mattn/goveralls
 script:
 - go test -v ./...
-- $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.out
+- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   -service=travis-ci -repotoken $COVERALLS_TOKEN
 env:
   global:
