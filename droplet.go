@@ -4,15 +4,15 @@ import (
 	"fmt"
 )
 
-const (
-	DropletEndpoint = "droplets"
-)
-
+// Networks represents a Droplet Network.
+// This is represented as two slices of
+// ipv4 and ipv6 addresses.
 type Networks struct {
 	V4 []*V4 `json:"v4,omitempty"`
 	V6 []*V6 `json:"v6,omitempty"`
 }
 
+// V4 represents a ipv4 address.
 type V4 struct {
 	IPAddress string `json:"ip_address,omitempty"`
 	Netmask   string `json:"netmask,omitempty"`
@@ -20,6 +20,7 @@ type V4 struct {
 	Type      string `json:"type,omitempty"`
 }
 
+// V6 represents a ipv6 address.
 type V6 struct {
 	IPAddress string `json:"ip_address,omitempty"`
 	Cidr      int    `json:"cidr,omitempty"`

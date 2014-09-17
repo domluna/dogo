@@ -1,114 +1,114 @@
 package dogo
 
 import (
-        "testing"
-        "net/http"
-        "fmt"
-        "encoding/json"
-        "strings"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+	"testing"
 )
 
 func Test_ListImages(t *testing.T) {
-        setup(t)
-        defer teardown()
+	setup(t)
+	defer teardown()
 
-        want := struct{
-                Images `json:"images"`
-        }{}
-        json.NewDecoder(strings.NewReader(listImagesExample)).Decode(&want)
+	want := struct {
+		Images `json:"images"`
+	}{}
+	json.NewDecoder(strings.NewReader(listImagesExample)).Decode(&want)
 
-        mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, listImagesExample)
-        })
+	mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, listImagesExample)
+	})
 
-        images, err := client.ListImages()
+	images, err := client.ListImages()
 
-        assertEqual(t, err, nil)
-        assertEqual(t, len(images), 2)
-        assertEqual(t, images, want.Images)
+	assertEqual(t, err, nil)
+	assertEqual(t, len(images), 2)
+	assertEqual(t, images, want.Images)
 }
 
 func Test_GetImage_ByID(t *testing.T) {
-        setup(t)
-        defer teardown()
+	setup(t)
+	defer teardown()
 
-        want := struct{
-                *Image `json:"image"`
-        }{}
-        json.NewDecoder(strings.NewReader(getImageExample)).Decode(&want)
+	want := struct {
+		*Image `json:"image"`
+	}{}
+	json.NewDecoder(strings.NewReader(getImageExample)).Decode(&want)
 
-        mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, getImageExample)
-        })
+	mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, getImageExample)
+	})
 
-        image, err := client.GetImage(1)
+	image, err := client.GetImage(1)
 
-        assertEqual(t, err, nil)
-        assertEqual(t, image, want.Image)
+	assertEqual(t, err, nil)
+	assertEqual(t, image, want.Image)
 }
 
 func Test_GetImage_BySlug(t *testing.T) {
-        setup(t)
-        defer teardown()
+	setup(t)
+	defer teardown()
 
-        want := struct{
-                *Image `json:"image"`
-        }{}
-        json.NewDecoder(strings.NewReader(getImageExample)).Decode(&want)
+	want := struct {
+		*Image `json:"image"`
+	}{}
+	json.NewDecoder(strings.NewReader(getImageExample)).Decode(&want)
 
-        mux.HandleFunc("/images/ubuntu1404", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "GET")
-                fmt.Fprint(w, getImageExample)
-        })
+	mux.HandleFunc("/images/ubuntu1404", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "GET")
+		fmt.Fprint(w, getImageExample)
+	})
 
-        image, err := client.GetImage("ubuntu1404")
+	image, err := client.GetImage("ubuntu1404")
 
-        assertEqual(t, err, nil)
-        assertEqual(t, image, want.Image)
+	assertEqual(t, err, nil)
+	assertEqual(t, image, want.Image)
 }
 
 func Test_DeleteImage(t *testing.T) {
-        setup(t)
-        defer teardown()
+	setup(t)
+	defer teardown()
 
-        mux.HandleFunc("/images/2", func(w http.ResponseWriter, r *http.Request){
-                assertEqual(t, r.Method, "DELETE")
-                fmt.Fprint(w, "")
-        })
+	mux.HandleFunc("/images/2", func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, r.Method, "DELETE")
+		fmt.Fprint(w, "")
+	})
 
-        err := client.DeleteImage(2)
+	err := client.DeleteImage(2)
 
-        assertEqual(t, err, nil)
+	assertEqual(t, err, nil)
 }
 
 func Test_UpdateImage(t *testing.T) {
-        setup(t)
-        defer teardown()
+	setup(t)
+	defer teardown()
 
-        opts := &UpdateImageOpts{
-                Name: "New Image Name",
-        }
+	opts := &UpdateImageOpts{
+		Name: "New Image Name",
+	}
 
-        want := struct{
-                *Image `json:"image"`
-        }{}
+	want := struct {
+		*Image `json:"image"`
+	}{}
 
-        json.NewDecoder(strings.NewReader(updateImageExample)).Decode(&want)
+	json.NewDecoder(strings.NewReader(updateImageExample)).Decode(&want)
 
-        mux.HandleFunc("/images/2", func(w http.ResponseWriter, r *http.Request){
-                v := new(UpdateImageOpts)
-                json.NewDecoder(r.Body).Decode(v)
-                assertEqual(t, r.Method, "PUT")
-                assertEqual(t, v, opts)
-                fmt.Fprint(w, updateImageExample)
-        })
+	mux.HandleFunc("/images/2", func(w http.ResponseWriter, r *http.Request) {
+		v := new(UpdateImageOpts)
+		json.NewDecoder(r.Body).Decode(v)
+		assertEqual(t, r.Method, "PUT")
+		assertEqual(t, v, opts)
+		fmt.Fprint(w, updateImageExample)
+	})
 
-        image, err := client.UpdateImage(2, "New Image Name")
+	image, err := client.UpdateImage(2, opts)
 
-        assertEqual(t, err, nil)
-        assertEqual(t, image, want.Image)
+	assertEqual(t, err, nil)
+	assertEqual(t, image, want.Image)
 }
 
 var listImagesExample = `{
@@ -138,7 +138,7 @@ var listImagesExample = `{
   ]
 }`
 
-var getImageExample =`{
+var getImageExample = `{
   "image": {
     "id": 1,
     "name": "Ubuntu 13.04",

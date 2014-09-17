@@ -12,13 +12,13 @@ func Test_ListSizes(t *testing.T) {
 
 	want := Sizes{
 		&Size{
-			Slug:        "512mb",
-			Disk:        20,
-                        Memory: 512,
-                        VCPUS: 1,
-                        Transfer: 1,
-			PriceHourly: 0.00744,
-                        PriceMonthly: 5.0,
+			Slug:         "512mb",
+			Disk:         20,
+			Memory:       512,
+			VCPUS:        1,
+			Transfer:     1,
+			PriceHourly:  0.00744,
+			PriceMonthly: 5.0,
 			Regions: []string{
 				"nyc1",
 				"sfo1",
@@ -26,13 +26,13 @@ func Test_ListSizes(t *testing.T) {
 			},
 		},
 		&Size{
-			Slug:        "1gb",
-			Disk:        30,
-                        Memory: 1024,
-                        VCPUS: 2,
-                        Transfer: 2,
-			PriceHourly: 0.01488,
-                        PriceMonthly: 10.0,
+			Slug:         "1gb",
+			Disk:         30,
+			Memory:       1024,
+			VCPUS:        2,
+			Transfer:     2,
+			PriceHourly:  0.01488,
+			PriceMonthly: 10.0,
 			Regions: []string{
 				"nyc1",
 				"sfo1",
@@ -46,12 +46,11 @@ func Test_ListSizes(t *testing.T) {
 		fmt.Fprint(w, listSizesExample)
 	})
 
-
 	sizes, err := client.ListSizes()
 
 	assertEqual(t, err, nil)
 	assertEqual(t, len(sizes), 2)
-        assertEqual(t, sizes, want)
+	assertEqual(t, sizes, want)
 }
 
 var listSizesExample = `{ 

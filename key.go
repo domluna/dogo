@@ -4,8 +4,6 @@ import (
 	"fmt"
 )
 
-const KeyEndpoint = "account/keys"
-
 // Key represents DigitalOcean ssh key.
 type Key struct {
 	ID          int    `json:"id,omitempty"`
@@ -17,11 +15,13 @@ type Key struct {
 // Keys is a list of Key.
 type Keys []*Key
 
+// CreateKeyOpts contains options used when creating a new ssh key.
 type CreateKeyOpts struct {
 	Name      string `json:"name"`
 	PublicKey string `json:"public_key"`
 }
 
+// UpdateKeyOpts contains options used when updating an existing ssh key.
 type UpdateKeyOpts struct {
 	Name string `json:"name"`
 }

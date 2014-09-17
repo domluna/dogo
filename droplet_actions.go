@@ -57,8 +57,8 @@ func (c *Client) ResizeDroplet(id int, size string) error {
 // intact.
 func (c *Client) RestoreDroplet(id int, image int) error {
 	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "restore",
-                "image": image,
+		"type":  "restore",
+		"image": image,
 	})
 }
 
@@ -66,8 +66,8 @@ func (c *Client) RestoreDroplet(id int, image int) error {
 // or an image slug.
 func (c *Client) RebuildDroplet(id int, image interface{}) error {
 	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "rebuild",
-                "image": image,
+		"type":  "rebuild",
+		"image": image,
 	})
 }
 
@@ -82,8 +82,8 @@ func (c *Client) RenameDroplet(id int, name string) error {
 // ChangeKernel changes the kernel of the droplet given the kernel id.
 func (c *Client) ChangeKernel(id int, kernel int) error {
 	return c.DoAction(DropletEndpoint, id, Params{
-		"type": "change_kernel",
-                "kernel": kernel,
+		"type":   "change_kernel",
+		"kernel": kernel,
 	})
 }
 
@@ -112,6 +112,6 @@ func (c *Client) EnablePrivateNetworking(id int) error {
 func (c *Client) SnapshotDroplet(id int, name string) error {
 	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "enable_private_networking",
-                "name": name,
+		"name": name,
 	})
 }

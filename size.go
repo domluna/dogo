@@ -1,9 +1,5 @@
 package dogo
 
-const (
-	SizeEndpoint = "sizes"
-)
-
 // Size is a representation for the size of a DigitalOcean droplet.
 type Size struct {
 	Slug         string   `json:"slug,omitempty"`
@@ -16,10 +12,9 @@ type Size struct {
 	Regions      []string `json:"regions,omitempty"`
 }
 
-// Sizes is a list of type Size.
 type Sizes []*Size
 
-// GetSizes returns all currently available droplet sizes.
+// ListSizes returns all currently available droplet sizes.
 func (c *Client) ListSizes() (Sizes, error) {
 	s := struct {
 		Sizes `json:"sizes,omitempty"`

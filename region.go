@@ -1,7 +1,5 @@
 package dogo
 
-const RegionEndpoint = "regions"
-
 // Region represents a DigitalOcean region.
 type Region struct {
 	Slug      string   `json:"slug,omitempty"`
@@ -11,10 +9,9 @@ type Region struct {
 	Features  []string `json:"features,omitempty"`
 }
 
-// Regions is a list of type Region.
 type Regions []*Region
 
-// GetRegions gets all current available regions a droplet may be created in.
+// ListRegions retrieves all current available regions a droplet may be created in.
 func (c *Client) ListRegions() (Regions, error) {
 	s := struct {
 		Regions `json:"regions,omitempty"`

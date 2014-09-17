@@ -4,9 +4,6 @@ import (
 	"fmt"
 )
 
-// ImageEndpoint is the DigitalOcean endpoint for interacting with images.
-const ImageEndpoint = "images"
-
 // Kernel is a DigitalOcean Kernel.
 type Kernel struct {
 	ID      int    `json:"id,omitempty"`
@@ -55,8 +52,9 @@ type Image struct {
 
 type Images []*Image
 
-type UpdateImageOpts struct{
-        Name string `json:"name"`
+// UpdateImageOpts contains options used when updating a image.
+type UpdateImageOpts struct {
+	Name string `json:"name"`
 }
 
 // ListImages retrieves all images on your account.
@@ -95,15 +93,12 @@ func (c *Client) DeleteImage(id int) error {
 }
 
 // UpdateImage updates the image's name given its id.
-func (c *Client) UpdateImage(id int, name string) (*Image, error) {
+func (c *Client) UpdateImage(id int, opts *UpdateImageOpts) (*Image, error) {
 	u := fmt.Sprintf("%s/%d", ImageEndpoint, id)
 	s := struct {
 		Image `json:"image,omitempty"`
 	}{}
-	payload := Params{
-		"name": name,
-	}
-	err := c.put(u, payload, &s)
+	err := c.put(u, opts, &s)
 	if err != nil {
 		return nil, err
 	}
