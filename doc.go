@@ -15,7 +15,7 @@ Each client requires a DigitalOcean token. Tokens can either be read, write or b
 
 If you export the token as follows:
 
-$ export $DIGITALOCEAN_TOKEN="token"
+        $ export $DIGITALOCEAN_TOKEN="token"
 
 For example using the droplet client will go as follows:
 
