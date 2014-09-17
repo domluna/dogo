@@ -1,4 +1,4 @@
-package digitalocean
+package dogo
 
 // TransferImage transfers an image to another region.
 func (c *Client) TransferImage(id int, region string) error {

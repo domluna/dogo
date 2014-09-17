@@ -1,4 +1,4 @@
-package digitalocean
+package dogo
 
 import (
 	"encoding/json"

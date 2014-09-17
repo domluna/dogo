@@ -1,4 +1,4 @@
-package digitalocean
+package dogo
 
 // RebootDroplet reboots the droplet.
 func (c *Client) RebootDroplet(id int, size string) error {
