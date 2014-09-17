@@ -1,4 +1,4 @@
-dogo [![Coverage Status](https://coveralls.io/repos/domluna/dogo/badge.png?branch=master)](https://coveralls.io/r/domluna/dogo?branch=master)[![GoDoc](https://godoc.org/github.com/domluna/dogo?status.png)](https://godoc.org/github.com/domluna/dogo)
+dogo [![Build Status](https://travis-ci.org/domluna/dogo.svg?branch=master)](https://travis-ci.org/domluna/dogo)[![Coverage Status](https://coveralls.io/repos/domluna/dogo/badge.png?branch=master)](https://coveralls.io/r/domluna/dogo?branch=master)[![GoDoc](https://godoc.org/github.com/domluna/dogo?status.png)](https://godoc.org/github.com/domluna/dogo)
 ====
 
 ## Overview
