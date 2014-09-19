@@ -1,7 +1,7 @@
 package dogo
 
 // RebootDroplet reboots the droplet.
-func (c *Client) RebootDroplet(id int, size string) error {
+func (c *Client) RebootDroplet(id int) error {
 	return c.DoAction(DropletEndpoint, id, Params{
 		"type": "reboot",
 	})
