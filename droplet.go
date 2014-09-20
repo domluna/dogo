@@ -50,7 +50,7 @@ type Droplet struct {
 }
 
 // IPV4 returns the ipv4 address of the droplet.
-func (d *Droplet) IPV4() string {
+func (d *Droplet) IPV4Addr() string {
 	if len(d.Networks.V4) > 0 {
 		return d.Networks.V4[0].IPAddress
 	}
@@ -58,26 +58,41 @@ func (d *Droplet) IPV4() string {
 }
 
 // IPV4 returns the ipv6 address of the droplet.
-func (d *Droplet) IPV6() string {
+func (d *Droplet) IPV6Addr() string {
 	if len(d.Networks.V6) > 0 {
 		return d.Networks.V6[0].IPAddress
 	}
 	return ""
 }
 
-// SizeSlug returns the size of the droplet, ex: "512mb".
+// SizeSlug returns the size of the droplet,
+// ex: "512mb".
 func (d *Droplet) SizeSlug() string {
 	return d.Size.Slug
 }
 
-// ImageSlug return the name of the droplet's image, ex: "Ubuntu 13.10 x64 ... "
+// ImageSlug return the name of the droplet's image,
+// ex: "Ubuntu 13.10 x64 ... ".
 func (d *Droplet) ImageName() string {
 	return d.Image.Name
 }
 
-// ImageID return the id of the droplet's image, ex: 3668014
+// ImageID return the id of the droplet's image,
+// ex: 3668014.
 func (d *Droplet) ImageID() int {
 	return d.Image.ID
+}
+
+// KernelName returns the name of the kernel,
+// ex: "Ubuntu 14.04 x32 vmlinuz-3.13.0-24-generic".
+func (d *Droplet) KernelName() string {
+	return d.Kernel.Name
+}
+
+// RegionSlug returns the region slug,
+// ex: "nyc3" for New York 3.
+func (d *Droplet) RegionSlug() string {
+	return d.Region.Slug
 }
 
 type Droplets []*Droplet

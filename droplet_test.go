@@ -49,9 +49,25 @@ func Test_CreateDroplet(t *testing.T) {
 			PriceMonthly: 5.0,
 			PriceHourly:  0.00744,
 		},
-		Locked:   false,
-		Status:   "new",
-		Networks: &Networks{},
+		Locked: false,
+		Status: "new",
+		Networks: &Networks{
+			[]*V4{
+				&V4{
+					IPAddress: "127.0.0.20",
+					Netmask:   "255.255.255.0",
+					Gateway:   "127.0.0.21",
+					Type:      "public",
+				}},
+			[]*V6{
+				&V6{
+					IPAddress: "2001::14",
+					Cidr:      124,
+					Gateway:   "2400:6180:0000:00D0:0000:0000:0009:7000",
+					Type:      "public",
+				},
+			},
+		},
 		Kernel: &Kernel{
 			ID:      485432972,
 			Name:    "Ubuntu 14.04 x64 vmlinuz-3.13.0-24-generic (1221)",
@@ -91,6 +107,13 @@ func Test_CreateDroplet(t *testing.T) {
 	droplet, err := client.CreateDroplet(opts)
 	assertEqual(t, err, nil)
 	assertEqual(t, droplet, want)
+	assertEqual(t, droplet.IPV4Addr(), "127.0.0.20")
+	assertEqual(t, droplet.IPV6Addr(), "2001::14")
+	assertEqual(t, droplet.SizeSlug(), "512mb")
+	assertEqual(t, droplet.ImageID(), 449676389)
+	assertEqual(t, droplet.KernelName(), "Ubuntu 14.04 x64 vmlinuz-3.13.0-24-generic (1221)")
+	assertEqual(t, droplet.RegionSlug(), "nyc1")
+	assertEqual(t, droplet.ImageName(), "Ubuntu 13.04")
 }
 func Test_DeleteDroplet(t *testing.T) {
 	setup(t)
@@ -293,6 +316,22 @@ var createDropletExample = `{
     "locked": false,
     "status": "new",
     "networks": {
+      "v4": [
+        {
+          "ip_address": "127.0.0.20",
+          "netmask": "255.255.255.0",
+          "gateway": "127.0.0.21",
+          "type": "public"
+        }
+      ],
+      "v6": [
+        {
+          "ip_address": "2001::14",
+          "cidr": 124,
+          "gateway": "2400:6180:0000:00D0:0000:0000:0009:7000",
+          "type": "public"
+        }
+      ]
     },
     "kernel": {
       "id": 485432972,
