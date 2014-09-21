@@ -52,7 +52,11 @@ type Droplet struct {
 // IPV4 returns the ipv4 address of the droplet.
 func (d *Droplet) IPV4Addr() string {
 	if len(d.Networks.V4) > 0 {
-		return d.Networks.V4[0].IPAddress
+                for _, net := range d.Networks.V4 {
+                        if net.Type == "public" {
+                                return net.IPAddress
+                        }
+                }
 	}
 	return ""
 }
@@ -61,6 +65,11 @@ func (d *Droplet) IPV4Addr() string {
 func (d *Droplet) IPV6Addr() string {
 	if len(d.Networks.V6) > 0 {
 		return d.Networks.V6[0].IPAddress
+                for _, net := range d.Networks.V6 {
+                        if net.Type == "public" {
+                                return net.IPAddress
+                        }
+                }
 	}
 	return ""
 }

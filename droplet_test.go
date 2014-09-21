@@ -58,6 +58,12 @@ func Test_CreateDroplet(t *testing.T) {
 					Netmask:   "255.255.255.0",
 					Gateway:   "127.0.0.21",
 					Type:      "public",
+				},
+				&V4{
+					IPAddress: "10.130.0.0",
+					Netmask:   "255.255.255.0",
+					Gateway:   "127.0.0.21",
+					Type:      "private",
 				}},
 			[]*V6{
 				&V6{
@@ -322,6 +328,12 @@ var createDropletExample = `{
           "netmask": "255.255.255.0",
           "gateway": "127.0.0.21",
           "type": "public"
+        },
+        {
+          "ip_address": "10.130.0.0",
+          "netmask": "255.255.255.0",
+          "gateway": "127.0.0.21",
+          "type": "private"
         }
       ],
       "v6": [
