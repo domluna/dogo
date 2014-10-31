@@ -76,7 +76,7 @@ func (c *Client) UpdateKey(v interface{}, opts *UpdateKeyOpts) (*Key, error) {
 	return &s.Key, nil
 }
 
-// DestroyKey destroys an SSH Key. Can use the ID or FINGERPRINT of the key.
+// DeleteKey deletes an SSH Key. Can use the ID or FINGERPRINT of the key.
 func (c *Client) DeleteKey(v interface{}) error {
 	u := fmt.Sprintf("%s/%v", KeyEndpoint, v)
 	err := c.delete(u)

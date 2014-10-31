@@ -19,6 +19,7 @@ type Domain struct {
 	ZoneFile string `json:"zone_file,omitempty"`
 }
 
+// Domains is a list of Domain.
 type Domains []*Domain
 
 // CreateDomainOpts contains options used when creating a new domain.

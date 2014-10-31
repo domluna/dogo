@@ -9,6 +9,7 @@ type Region struct {
 	Features  []string `json:"features,omitempty"`
 }
 
+// Regions is a list of Region.
 type Regions []*Region
 
 // ListRegions retrieves all current available regions a droplet may be created in.

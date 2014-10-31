@@ -11,6 +11,7 @@ type Kernel struct {
 	Version string `json:"version,omitempty"`
 }
 
+// Kernels is a list of Kernel.
 type Kernels []*Kernel
 
 // Snapshot is a DigitalOcean snapshot.
@@ -24,6 +25,7 @@ type Snapshot struct {
 	ActionIDs    []int    `json:"action_ids,omitempty"`
 }
 
+// Snapshots is a list of Snapshot.
 type Snapshots []*Snapshot
 
 // Backup is a DigitalOcean backup.
@@ -37,9 +39,10 @@ type Backup struct {
 	ActionIDs    []int    `json:"action_ids,omitempty"`
 }
 
+// Backups is a list of Backup.
 type Backups []*Backup
 
-// Representation for a DigitalOcean Image.
+// Image is a representation for a DigitalOcean Image.
 type Image struct {
 	ID           int      `json:"id,omitempty"`
 	Name         string   `json:"name,omitempty"`
@@ -50,6 +53,7 @@ type Image struct {
 	CreatedAt    string   `json:"created_at,omitempty"`
 }
 
+// Images is a list of Image.
 type Images []*Image
 
 // UpdateImageOpts contains options used when updating a image.

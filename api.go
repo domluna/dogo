@@ -27,7 +27,7 @@ func NewClient(token string) (*Client, error) {
 		token = os.Getenv("DIGITALOCEAN_TOKEN")
 	}
 	if token == "" {
-		return nil, EnvError
+		return nil, ErrEnv
 	}
 	cl := &Client{
 		Token: token,
@@ -107,6 +107,7 @@ func (c *Client) put(endpoint string, opts interface{}, v interface{}) error {
 	return nil
 }
 
+// DoRequest sends the request over to the DigitalOcean API servers.
 func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	cl := &http.Client{}
 	req.Header.Set("Authorization", "Bearer "+c.Token)

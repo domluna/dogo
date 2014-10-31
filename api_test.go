@@ -94,7 +94,7 @@ func Test_NewClient_EnvNotPresent(t *testing.T) {
 	if err == nil {
 		t.Errorf("Should be an error about DIGITALOCEAN_TOKEN not being present")
 	}
-	assertEqual(t, err, EnvError)
+	assertEqual(t, err, ErrEnv)
 }
 
 func Test_API_Get(t *testing.T) {

@@ -12,6 +12,7 @@ type Size struct {
 	Regions      []string `json:"regions,omitempty"`
 }
 
+// Sizes is a list of Size.
 type Sizes []*Size
 
 // ListSizes returns all currently available droplet sizes.

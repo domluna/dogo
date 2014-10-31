@@ -16,6 +16,7 @@ type Action struct {
 	Region       string `json:"region,omitempty"`
 }
 
+// Actions is a list of Action.
 type Actions []*Action
 
 // ListActions retrieves all DigitalOcean actions.

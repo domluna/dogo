@@ -49,27 +49,26 @@ type Droplet struct {
 	Features    []string  `json:"features,omitempty"`
 }
 
-// IPV4 returns the ipv4 address of the droplet.
+// IPV4Addr returns the ipv4 address of the droplet.
 func (d *Droplet) IPV4Addr() string {
 	if len(d.Networks.V4) > 0 {
-                for _, net := range d.Networks.V4 {
-                        if net.Type == "public" {
-                                return net.IPAddress
-                        }
-                }
+		for _, net := range d.Networks.V4 {
+			if net.Type == "public" {
+				return net.IPAddress
+			}
+		}
 	}
 	return ""
 }
 
-// IPV4 returns the ipv6 address of the droplet.
+// IPV6Addr returns the ipv6 address of the droplet.
 func (d *Droplet) IPV6Addr() string {
 	if len(d.Networks.V6) > 0 {
-		return d.Networks.V6[0].IPAddress
-                for _, net := range d.Networks.V6 {
-                        if net.Type == "public" {
-                                return net.IPAddress
-                        }
-                }
+		for _, net := range d.Networks.V6 {
+			if net.Type == "public" {
+				return net.IPAddress
+			}
+		}
 	}
 	return ""
 }
@@ -80,7 +79,7 @@ func (d *Droplet) SizeSlug() string {
 	return d.Size.Slug
 }
 
-// ImageSlug return the name of the droplet's image,
+// ImageName return the name of the droplet's image,
 // ex: "Ubuntu 13.10 x64 ... ".
 func (d *Droplet) ImageName() string {
 	return d.Image.Name
@@ -104,9 +103,10 @@ func (d *Droplet) RegionSlug() string {
 	return d.Region.Slug
 }
 
+// Droplets is a list of Droplet.
 type Droplets []*Droplet
 
-// CreateDroplet is a utility object used when
+// CreateDropletOpts is a utility object used when
 // creating a droplet.
 //
 // Name, Region, Size and Image are required.
@@ -165,7 +165,7 @@ func (c *Client) CreateDroplet(opts *CreateDropletOpts) (*Droplet, error) {
 	return &s.Droplet, nil
 }
 
-// DestroyDroplet destroys a droplet. CAUTION - this is irreversible.
+// DeleteDroplet destroys a droplet. CAUTION - this is irreversible.
 // There may be more appropriate options.
 func (c *Client) DeleteDroplet(id int) error {
 	u := fmt.Sprintf("%s/%d", DropletEndpoint, id)
