@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -113,7 +112,7 @@ func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Authorization", "Bearer "+c.Token)
 	resp, err := cl.Do(req)
 	if err != nil {
-		return fmt.Errorf("Error attemping request: %s", err)
+		return fmt.Errorf("dogo: Error attemping request: %s", err)
 	}
 	err = decode(resp, v)
 	if err != nil {
@@ -124,26 +123,22 @@ func (c *Client) DoRequest(req *http.Request, v interface{}) error {
 
 // Decode parses the response.
 func decode(resp *http.Response, v interface{}) error {
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("Error reading response: %s", err)
-	}
 	// create error
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		apiErr := &APIError{
 			StatusCode: resp.StatusCode,
 		}
-		err := json.Unmarshal(body, apiErr)
+		err := json.NewDecoder(resp.Body).Decode(apiErr)
 		if err != nil {
-			return fmt.Errorf("Error UnMarshaling JSON Response into error: %s", err)
+			return fmt.Errorf("dogo: Error UnMarshaling JSON Response into error: %s", err)
 		}
 		return apiErr
 	}
 
 	if v != nil {
-		err := json.Unmarshal(body, &v)
+		err := json.NewDecoder(resp.Body).Decode(&v)
 		if err != nil {
-			return fmt.Errorf("Error UnMarshaling JSON Response into struct: %s", err)
+			return fmt.Errorf("dogo: Error UnMarshaling JSON Response into struct: %s", err)
 		}
 	}
 	return nil
