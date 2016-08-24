@@ -3,13 +3,9 @@ dogo [![Build Status](https://travis-ci.org/domluna/dogo.svg?branch=master)](htt
 
 ## Overview
 
+This project is **NOT MAINTAINED**. I'd recommend using [DigitalOcean's official API](https://github.com/digitalocean/godo) instead.
+
 DigitalOcean Go Client V2 API.
-
-Alternatives:
-  * [DO Go Official API](https://github.com/digitalocean/godo)
-  * [Pearkes DO API](https://github.com/pearkes/digitalocean)
-
-I think this API is a sweetspot between these two. It has more features than Pearkes but more lightweight than the DO Official API.
 
 ## Getting Started
 
